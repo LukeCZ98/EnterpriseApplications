@@ -1,5 +1,6 @@
 package com.unical.amazing
 
+import HomeScreen
 import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -15,6 +16,7 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
@@ -23,8 +25,17 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import androidx.core.view.WindowCompat
+import androidx.navigation.NavController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import com.unical.amazing.viewmodel.HomeViewModel
 
-
+/*
+* VIEWMODEL: INSERIRE FUNZIONI CHE ANDRANNO UTILIZZATE NELLE VIEWS (HOME,ACCOUNT,CART) QUINDI COMPONENTI GRAFICI
+* VIEW: COMPONENTI GRAFICI QUINDI LE SCHERMATE CON I VARI BOTTONI COMPONENTI ECC
+* MODEL: DAO, DTO, ECC
+* */
 
 class MainActivity : ComponentActivity() {
     @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
@@ -33,15 +44,28 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         WindowCompat.setDecorFitsSystemWindows(window, true)
         setContent {
+            val navController = rememberNavController()
+            val homeViewModel = remember { HomeViewModel() }
             AmazingTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colors.background
                 ) {
                     Scaffold(
-                        bottomBar = { NavBar() },
-                        topBar = { SearchBar() }
-                    ) {}
+                        bottomBar = { NavBar(navController) }
+                    ) {
+                        NavHost(navController, startDestination = "account") {
+                            composable("home") {
+                                HomeScreen(homeViewModel = homeViewModel)
+                            }
+                            composable("account") {
+//                                AccountScreen()
+                            }
+                            composable("cart") {
+//                                CartScreen()
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -54,13 +78,14 @@ class MainActivity : ComponentActivity() {
 
 //Funzioni per generare la barra di navigazione e la barra di ricerca
 @Composable
-fun NavBar(){
+fun NavBar(navController: NavController){
     data class BottomNavigationItem(
         val title: String,
         val selectedIcon: ImageVector,
         val unselectedIcon: ImageVector,
         val cartEmpty: Boolean,
-        val badgeCount: Int? = null
+        val badgeCount: Int? = null,
+        val route: String = title
     )
     val items = listOf(
         BottomNavigationItem(
@@ -94,6 +119,7 @@ fun NavBar(){
                     selected = selectedItemIndex == index,
                     onClick = {
                         selectedItemIndex = index
+                        navController.navigate(item.route)
                     },
                     label = {
                         Text(text = item.title)
