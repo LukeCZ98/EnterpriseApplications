@@ -1,21 +1,26 @@
 package com.unical.amazing.viewmodel
 
 
-import com.unical.amazing.model.HomeItem
-import com.unical.amazing.model.HomeModel
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.unical.amazing.model.Product
+import com.unical.amazing.model.ProductRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
 
-class HomeViewModel {
-    private val homeModel = HomeModel()
+class HomeViewModel : ViewModel() {
+    private val _products = MutableStateFlow<List<Product>>(emptyList())
+    val products: StateFlow<List<Product>> = _products
 
-    // Dichiarare homeItems come MutableStateFlow
-    private val _homeItems: MutableStateFlow<List<HomeItem>> = MutableStateFlow(emptyList())
-    val homeItems: StateFlow<List<HomeItem>> = _homeItems
+    init {
+        fetchProducts()
+    }
 
-    fun fetchHomeItems() {
-        // Aggiornare il valore di _homeItems invece di homeItems
-        _homeItems.value = homeModel.getHomeItems()
+    private fun fetchProducts() {
+        viewModelScope.launch {
+            _products.value = ProductRepository.fetchProducts()
+        }
     }
 }
 

@@ -1,6 +1,6 @@
 package com.unical.amazing
 
-import HomeScreen
+
 import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -9,33 +9,23 @@ import androidx.activity.enableEdgeToEdge
 import com.unical.amazing.theme.AmazingTheme
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
-import androidx.compose.ui.unit.dp
 import androidx.core.view.WindowCompat
 import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.unical.amazing.viewmodel.HomeViewModel
-
-/*
-* VIEWMODEL: INSERIRE FUNZIONI CHE ANDRANNO UTILIZZATE NELLE VIEWS (HOME,ACCOUNT,CART) QUINDI COMPONENTI GRAFICI
-* VIEW: COMPONENTI GRAFICI QUINDI LE SCHERMATE CON I VARI BOTTONI COMPONENTI ECC
-* MODEL: DAO, DTO, ECC
-* */
+import com.unical.amazing.view.HomeActivity
 
 class MainActivity : ComponentActivity() {
     @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
@@ -45,7 +35,7 @@ class MainActivity : ComponentActivity() {
         WindowCompat.setDecorFitsSystemWindows(window, true)
         setContent {
             val navController = rememberNavController()
-            val homeViewModel = remember { HomeViewModel() }
+
             AmazingTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
@@ -54,9 +44,9 @@ class MainActivity : ComponentActivity() {
                     Scaffold(
                         bottomBar = { NavBar(navController) }
                     ) {
-                        NavHost(navController, startDestination = "account") {
+                        NavHost(navController, startDestination = "home") {
                             composable("home") {
-                                HomeScreen(homeViewModel = homeViewModel)
+                                HomeActivity()
                             }
                             composable("account") {
 //                                AccountScreen()
@@ -76,7 +66,7 @@ class MainActivity : ComponentActivity() {
 
 
 
-//Funzioni per generare la barra di navigazione e la barra di ricerca
+//Funzione per generare la barra di ricerca
 @Composable
 fun NavBar(navController: NavController){
     data class BottomNavigationItem(
@@ -137,7 +127,7 @@ fun NavBar(navController: NavController){
                             }) {
                             Icon(
                                 contentDescription = item.title,
-                                imageVector = if (index == selectedItemIndex) item.unselectedIcon else item.selectedIcon
+                                imageVector = if (index == selectedItemIndex) item.selectedIcon else item.unselectedIcon
                             )
                         }
                     }
@@ -147,22 +137,6 @@ fun NavBar(navController: NavController){
 }
 
 
-@Composable
-fun SearchBar(){
-    TopAppBar(
-        title = { Text(text = "App Title") },
-        backgroundColor = MaterialTheme.colors.primary,
-        contentColor = Color.White,
-        elevation = 4.dp,
-        navigationIcon = { /* Icona di navigazione, se necessario */ },
-        actions = {
-            // Campo di ricerca
-            IconButton(onClick = { /* Azione di ricerca */ }) {
-                Icon(Icons.Filled.Search, contentDescription = "Search")
-            }
-        }
-    )
-}
 
 
 
