@@ -9,10 +9,17 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
-package io.swagger.client.apis
+package com.unical.amazing.swagger.apis
 
-
-import io.swagger.client.infrastructure.*
+import io.swagger.client.infrastructure.ApiClient
+import io.swagger.client.infrastructure.ClientError
+import io.swagger.client.infrastructure.ClientException
+import io.swagger.client.infrastructure.RequestConfig
+import io.swagger.client.infrastructure.RequestMethod
+import io.swagger.client.infrastructure.ResponseType
+import io.swagger.client.infrastructure.ServerError
+import io.swagger.client.infrastructure.ServerException
+import io.swagger.client.infrastructure.Success
 
 class AuthApi(basePath: kotlin.String = "http://localhost:8010/") : ApiClient(basePath) {
 

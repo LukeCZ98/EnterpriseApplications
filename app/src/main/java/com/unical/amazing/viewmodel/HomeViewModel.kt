@@ -1,6 +1,5 @@
 package com.unical.amazing.viewmodel
 
-
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.unical.amazing.model.Product
@@ -19,9 +18,17 @@ class HomeViewModel : ViewModel() {
 
     private fun fetchProducts() {
         viewModelScope.launch {
-            _products.value = ProductRepository.fetchProducts()
+            try {
+                // Esegui le operazioni di rete su un thread separato
+                val productList = ProductRepository.fetchProducts()
+                _products.value = productList
+            } catch (e: Exception) {
+                // Gestisci gli errori di rete
+                // Ad esempio, puoi impostare un valore di fallback o mostrare un messaggio di errore
+            }
         }
     }
 }
+
 
 

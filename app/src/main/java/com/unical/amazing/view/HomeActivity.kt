@@ -1,10 +1,9 @@
 package com.unical.amazing.view
 
 import android.annotation.SuppressLint
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
@@ -12,25 +11,31 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.unical.amazing.viewmodel.HomeViewModel
-import com.unical.amazing.model.Product
-
+import com.unical.amazing.swagger.apis.ProductApi
+import com.unical.amazing.swagger.models.ProductDto
+import kotlinx.coroutines.launch
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun HomeActivity(){
-    val viewModel: HomeViewModel = viewModel()
-    val products by viewModel.products.collectAsState()
+fun HomeActivity() {
+    val context = LocalContext.current
+    val viewModel: ProductViewModel = viewModel()
+
+    LaunchedEffect(Unit) {
+        viewModel.loadProducts(context)
+    }
 
     Scaffold(
         topBar = { SearchBar() }
     ) {
-        ProductList(products)
+        ProductList(products = viewModel.productList)
     }
-
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -77,31 +82,75 @@ fun SearchBar() {
     )
 }
 
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun ProductList(products: List<Product>) {
-    LazyColumn {
-        items(products) { product ->
-            ProductItem(product)
+fun ProductList(products: List<ProductDto>) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp)
+    ) {
+        if (products.isNotEmpty()) {
+            Text(
+                text = "Prodotti",
+                modifier = Modifier.padding(bottom = 8.dp)
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            products.forEach { product ->
+                ProductItem(product)
+                Spacer(modifier = Modifier.height(8.dp))
+            }
+        } else {
+            Text(
+                text = "Nessun prodotto trovato",
+                modifier = Modifier.fillMaxWidth()
+            )
         }
     }
 }
 
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun ProductItem(product: Product) {
-    Row(
+fun ProductItem(product: ProductDto) {
+    Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(16.dp)
+            .padding(vertical = 8.dp),
     ) {
-        Text(
-            text = product.title,
-            fontSize = 20.sp,
-            modifier = Modifier.weight(1f)
-        )
-        Text(
-            text = "${product.price} €",
-            fontSize = 16.sp,
-            color = Color.Gray
-        )
+        Column(
+            modifier = Modifier
+                .padding(16.dp)
+        ) {
+            product.title?.let {
+                Text(
+                    text = it,
+                )
+            }
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(
+                text = "Prezzo: ${product.price}",
+            )
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(
+                text = "Descrizione: ${product.description}",
+            )
+        }
+    }
+}
+
+class ProductViewModel : ViewModel() {
+    var productList by mutableStateOf(emptyList<ProductDto>())
+        private set
+
+    fun loadProducts(context: android.content.Context) {
+        viewModelScope.launch {
+            try {
+                // Ottieni la lista dei prodotti dall'API
+                productList = ProductApi().getAll().toList()
+            } catch (e: Exception) {
+                // Gestisci gli errori di connessione o altri problemi
+                Toast.makeText(context, "Errore durante il recupero dei prodotti $e", Toast.LENGTH_SHORT).show()
+            }
+        }
     }
 }

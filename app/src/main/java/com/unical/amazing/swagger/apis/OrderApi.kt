@@ -11,7 +11,7 @@
  */
 package io.swagger.client.apis
 
-import io.swagger.client.models.OrderDto
+import com.unical.amazing.swagger.models.OrderDto
 
 import io.swagger.client.infrastructure.*
 

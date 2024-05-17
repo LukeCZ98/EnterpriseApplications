@@ -9,7 +9,7 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
-package io.swagger.client.models
+package com.unical.amazing.swagger.models
 
 
 /**
@@ -21,7 +21,7 @@ package io.swagger.client.models
  * @param userId 
  */
 data class ProductDto (
-
+    val id: kotlin.Int? = null,
     val title: kotlin.String? = null,
     val price: kotlin.Float? = null,
     val description: kotlin.String? = null,

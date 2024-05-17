@@ -1,6 +1,8 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
+    // Aggiungi il plugin di Kotlin Serialization
+    id("org.jetbrains.kotlin.plugin.serialization") version "1.8.0"
 }
 
 android {
@@ -50,6 +52,7 @@ android {
 }
 
 dependencies {
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -85,16 +88,16 @@ dependencies {
     implementation(libs.ui.graphics)
     implementation(libs.ui.tooling.preview)
     implementation(libs.androidx.material3.v100alpha01)
-
-    // Ktor dependencies
-    implementation(libs.ktor.client.core.v230)
-    implementation(libs.ktor.client.cio.v230)
-    implementation(libs.ktor.client.content.negotiation)
-    implementation(libs.ktor.serialization.kotlinx.json)
-    implementation(libs.ktor.client.logging)
-
-    // ViewModel
-    implementation(libs.androidx.lifecycle.viewmodel.compose)
+    implementation(libs.swagger.annotations)  // Esempio di una possibile dipendenza
+    implementation (libs.ktor.client.core.v230)
+    implementation (libs.ktor.client.cio.v230)
+    implementation (libs.ktor.client.content.negotiation.v200)
+    implementation (libs.ktor.serialization.kotlinx.json.v200)
+    implementation (libs.ktor.client.logging.v200)
+    implementation (libs.kotlinx.coroutines.android)
+    // Kotlinx serialization
+    implementation(libs.kotlinx.serialization.json)
+    implementation (libs.androidx.lifecycle.viewmodel.ktx)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
