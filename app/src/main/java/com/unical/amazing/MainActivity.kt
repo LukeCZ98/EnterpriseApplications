@@ -25,7 +25,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.unical.amazing.view.HomeActivity
+import com.unical.amazing.view.HomeView
 
 class MainActivity : ComponentActivity() {
     @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
@@ -46,7 +46,7 @@ class MainActivity : ComponentActivity() {
                     ) {
                         NavHost(navController, startDestination = "home") {
                             composable("home") {
-                                HomeActivity()
+                                HomeView()
                             }
                             composable("account") {
 //                                AccountScreen()

@@ -95,9 +95,12 @@ dependencies {
     implementation (libs.ktor.serialization.kotlinx.json.v200)
     implementation (libs.ktor.client.logging.v200)
     implementation (libs.kotlinx.coroutines.android)
+    implementation ("androidx.compose.foundation:foundation:1.3.1")
     // Kotlinx serialization
     implementation(libs.kotlinx.serialization.json)
     implementation (libs.androidx.lifecycle.viewmodel.ktx)
+    implementation(libs.okhttp.v493)
+    implementation(libs.kotlinx.serialization.json.v132)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

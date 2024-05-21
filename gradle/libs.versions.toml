@@ -10,6 +10,7 @@ junitVersion = "1.1.5"
 espressoCore = "3.5.1"
 kotlinxCoroutinesAndroid = "1.7.3"
 kotlinxSerializationJson = "1.5.0"
+kotlinxSerializationJsonVersion = "1.3.2"
 ktorClientCio = "2.0.0"
 ktorClientCioVersion = "2.3.0"
 ktorClientContentNegotiation = "2.3.0"
@@ -43,6 +44,7 @@ activity = "1.9.0"
 navigationCompose = "2.7.7"
 material3Android = "1.2.1"
 okhttp = "4.11.0"
+okhttpVersion = "4.9.3"
 swaggerAnnotations = "1.6.2"
 swaggerParser = "2.0.24"
 ui = "1.6.7"
@@ -76,6 +78,7 @@ androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit
 androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
 kotlinx-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "kotlinxCoroutinesAndroid" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerializationJson" }
+kotlinx-serialization-json-v132 = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerializationJsonVersion" }
 ktor-client-cio = { module = "io.ktor:ktor-client-cio", version.ref = "ktorClientCio" }
 ktor-client-cio-v230 = { module = "io.ktor:ktor-client-cio", version.ref = "ktorClientCioVersion" }
 ktor-client-content-negotiation = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktorClientContentNegotiation" }
@@ -100,6 +103,7 @@ moshi = { module = "com.squareup.moshi:moshi", version.ref = "moshi" }
 moshi-adapters = { module = "com.squareup.moshi:moshi-adapters", version.ref = "moshiAdapters" }
 moshi-kotlin = { module = "com.squareup.moshi:moshi-kotlin", version.ref = "moshiKotlin" }
 okhttp = { module = "com.squareup.okhttp3:okhttp", version.ref = "okhttp" }
+okhttp-v493 = { module = "com.squareup.okhttp3:okhttp", version.ref = "okhttpVersion" }
 swagger-annotations = { module = "io.swagger:swagger-annotations", version.ref = "swaggerAnnotations" }
 swagger-parser = { module = "io.swagger:swagger-parser", version.ref = "swaggerParser" }
 ui = { module = "androidx.compose.ui:ui", version.ref = "ui" }
