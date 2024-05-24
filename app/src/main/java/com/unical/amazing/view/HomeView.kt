@@ -52,7 +52,7 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.ui.graphics.Brush
+
 
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -151,6 +151,10 @@ fun ProductList(
                     ProductItem(product)
                 }
             }
+            // Aggiungi uno Spacer alla fine della lista per creare spazio
+            item {
+                Spacer(modifier = Modifier.height(80.dp)) // Adjust the height as needed
+            }
         }
     } else {
         Column(
@@ -170,6 +174,7 @@ fun ProductList(
         }
     }
 }
+
 
 
 

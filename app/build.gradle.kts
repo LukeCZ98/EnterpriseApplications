@@ -96,6 +96,7 @@ dependencies {
     implementation (libs.ktor.client.logging.v200)
     implementation (libs.kotlinx.coroutines.android)
     implementation ("androidx.compose.foundation:foundation:1.3.1")
+    implementation ("io.coil-kt:coil-compose:2.0.0")
     // Kotlinx serialization
     implementation(libs.kotlinx.serialization.json)
     implementation (libs.androidx.lifecycle.viewmodel.ktx)

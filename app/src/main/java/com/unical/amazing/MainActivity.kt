@@ -25,6 +25,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.unical.amazing.view.AccountView
 import com.unical.amazing.view.HomeView
 
 class MainActivity : ComponentActivity() {
@@ -49,7 +50,7 @@ class MainActivity : ComponentActivity() {
                                 HomeView()
                             }
                             composable("account") {
-//                                AccountScreen()
+                                AccountView()
                             }
                             composable("cart") {
 //                                CartScreen()
