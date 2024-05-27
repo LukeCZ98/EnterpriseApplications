@@ -25,7 +25,7 @@ fun UserProfileSection(user: User) {
         modifier = Modifier.padding(vertical = 16.dp)
     ) {
         Text(
-            text = "User Profile",
+            text = "Dati personali",
             style = MaterialTheme.typography.h6,
             color = MaterialTheme.colors.primary,
             fontSize = 18.sp

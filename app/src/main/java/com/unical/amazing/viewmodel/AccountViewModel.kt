@@ -1,40 +1,44 @@
 package com.unical.amazing.viewmodel
 
-// AccountViewModel.kt
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.unical.amazing.model.Order
-import com.unical.amazing.model.OrderItem
 import com.unical.amazing.model.User
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 class AccountViewModel : ViewModel() {
+    private val _user = MutableStateFlow<User?>(null)
+    val user: StateFlow<User?> get() = _user
 
-    private val _user = MutableStateFlow(User(
-        id = "12345",
-        name = "John Doe",
-        email = "johndoe@example.com",
-        profilePictureUrl = "https://example.com/profile.jpg",
-        orders = listOf(
-            Order(
-                orderId = "order123",
-                date = "2023-01-01",
-                status = "Delivered",
-                items = listOf(
-                    OrderItem("item123", "Product 1", 1, 29.99),
-                    OrderItem("item124", "Product 2", 2, 49.99)
-                )
-            )
-        )
-    ))
-    val user: StateFlow<User> get() = _user
+    init {
+        fetchUserData()
+    }
 
-    fun fetchUserData() {
-        // Simula una chiamata di rete o una lettura da un database
+    private fun fetchUserData() {
+        // Simula una chiamata di rete per ottenere i dati dell'utente
         viewModelScope.launch {
-            // Aggiorna i dati dell'utente
+            val user = User(
+                id = "12345",
+                name = "John ",
+                surname = "Doe",
+                phone = 123456789,
+                CAP = 88100,
+                city = "Catanzaro",
+                country = "Italia",
+                email = "johndoe@example.com",
+                address = "via del tutto eccezionale",
+                wishlist = listOf("Item 1", "Item 2", "Item 3"),
+                profilePictureUrl = "",
+                orders = listOf()
+            )
+            _user.value = user
         }
+    }
+
+    fun updateUserProfilePicture(newProfilePictureUri: String) {
+        val currentUser = _user.value ?: return
+        val updatedUser = currentUser.copy(profilePictureUrl = newProfilePictureUri)
+        _user.value = updatedUser
     }
 }
