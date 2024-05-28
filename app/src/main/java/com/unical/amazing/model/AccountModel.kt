@@ -1,6 +1,6 @@
 package com.unical.amazing.model
 
-// User.kt
+
 data class User(
     val id: String,
     val name: String,
@@ -13,7 +13,7 @@ data class User(
     val country: String,
     val profilePictureUrl: String,
     val orders: List<Order>,
-    val wishlist:List<String>
+    val wishlists: List<Wishlist>
 )
 
 data class Order(
@@ -29,3 +29,15 @@ data class OrderItem(
     val quantity: Int,
     val price: Double
 )
+
+data class Item(
+    val itemId: String,
+    val name: String,
+    val description: String,
+    val price: Double,
+    val quantity: Int,
+    val image: String,
+    val isPublic: Boolean
+) {
+
+}

@@ -6,17 +6,14 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -34,19 +31,37 @@ fun UserProfileScreen(accountViewModel: AccountViewModel = viewModel()) {
     val userState = accountViewModel.user.collectAsState()
 
     userState.value?.let { user ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp)
-        ) {
-            UserProfileHeader(user) { uri ->
-                // Handle the new profile image URI, e.g., update the user profile picture
-                accountViewModel.updateUserProfilePicture(uri.toString())
+        Scaffold(
+            topBar = {
+                TopAppBar(
+                    title = { Text("I miei dati") }
+                )
+            },
+            bottomBar = {
+                BottomAppBar {
+                    // Optionally, add items to the bottom bar
+                }
             }
-            Spacer(modifier = Modifier.height(16.dp))
-            UserProfileDetails(user)
-            Spacer(modifier = Modifier.height(16.dp))
-            EditProfileButton()
+        ) { paddingValues ->
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues)
+                    .padding(horizontal = 16.dp, vertical = 8.dp)
+            ) {
+                item {
+                    UserProfileHeader(user) { uri ->
+                        accountViewModel.updateUserProfilePicture(uri.toString())
+                    }
+                    Spacer(modifier = Modifier.height(16.dp))
+                }
+                item {
+                    UserProfileDetails(user) { updatedUser ->
+                        accountViewModel.updateUser(updatedUser)
+                    }
+                    Spacer(modifier = Modifier.height(16.dp))
+                }
+            }
         }
     } ?: run {
         Box(
@@ -108,58 +123,117 @@ fun UserProfileHeader(user: User, onProfileImageChange: (Uri) -> Unit) {
 }
 
 @Composable
-fun UserProfileDetails(user: User) {
+fun UserProfileDetails(user: User, onSave: (User) -> Unit) {
+    var isEditing by remember { mutableStateOf(false) }
+    var editableUser by remember { mutableStateOf(user) }
+
     Card(
         shape = RoundedCornerShape(8.dp),
         elevation = 4.dp,
         modifier = Modifier.fillMaxWidth()
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
-            UserProfileDetailItem(label = "name", value = user.name)
+            UserProfileDetailItem(
+                label = "Name",
+                value = editableUser.name,
+                isEditing = false, // Name is not editable
+                onValueChange = { editableUser = editableUser.copy(name = it) }
+            )
             Divider(color = Color.Gray, thickness = 0.5.dp, modifier = Modifier.padding(vertical = 8.dp))
 
-            UserProfileDetailItem(label = "surname", value = user.surname)
+            UserProfileDetailItem(
+                label = "Surname",
+                value = editableUser.surname,
+                isEditing = false, // Surname is not editable
+                onValueChange = { editableUser = editableUser.copy(surname = it) }
+            )
             Divider(color = Color.Gray, thickness = 0.5.dp, modifier = Modifier.padding(vertical = 8.dp))
 
-            UserProfileDetailItem(label = "email", value = user.email)
+            UserProfileDetailItem(
+                label = "Email",
+                value = editableUser.email,
+                isEditing = false, // Email is not editable
+                onValueChange = { editableUser = editableUser.copy(email = it) }
+            )
             Divider(color = Color.Gray, thickness = 0.5.dp, modifier = Modifier.padding(vertical = 8.dp))
 
-            UserProfileDetailItem(label = "Address", value = user.address)
+            UserProfileDetailItem(
+                label = "Address",
+                value = editableUser.address,
+                isEditing = isEditing,
+                onValueChange = { editableUser = editableUser.copy(address = it) }
+            )
             Divider(color = Color.Gray, thickness = 0.5.dp, modifier = Modifier.padding(vertical = 8.dp))
 
-            UserProfileDetailItem(label = "Phone", value = user.phone.toString())
+            UserProfileDetailItem(
+                label = "Phone",
+                value = editableUser.phone.toString(),
+                isEditing = isEditing,
+                onValueChange = { editableUser = editableUser.copy(phone = it.toInt()) }
+            )
             Divider(color = Color.Gray, thickness = 0.5.dp, modifier = Modifier.padding(vertical = 8.dp))
 
-            UserProfileDetailItem(label = "CAP", value = user.CAP.toString())
+            UserProfileDetailItem(
+                label = "CAP",
+                value = editableUser.CAP.toString(),
+                isEditing = isEditing,
+                onValueChange = { editableUser = editableUser.copy(CAP = it.toInt()) }
+            )
             Divider(color = Color.Gray, thickness = 0.5.dp, modifier = Modifier.padding(vertical = 8.dp))
 
-            UserProfileDetailItem(label = "city", value = user.city)
+            UserProfileDetailItem(
+                label = "City",
+                value = editableUser.city,
+                isEditing = isEditing,
+                onValueChange = { editableUser = editableUser.copy(city = it) }
+            )
             Divider(color = Color.Gray, thickness = 0.5.dp, modifier = Modifier.padding(vertical = 8.dp))
 
-            UserProfileDetailItem(label = "country", value = user.country)
+            UserProfileDetailItem(
+                label = "Country",
+                value = editableUser.country,
+                isEditing = isEditing,
+                onValueChange = { editableUser = editableUser.copy(country = it) }
+            )
             Divider(color = Color.Gray, thickness = 0.5.dp, modifier = Modifier.padding(vertical = 8.dp))
 
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Button(
+                onClick = {
+                    if (isEditing) {
+                        onSave(editableUser)
+                    }
+                    isEditing = !isEditing
+                },
+                modifier = Modifier.align(Alignment.End)
+            ) {
+                Text(if (isEditing) "Save" else "Edit")
+            }
         }
     }
 }
 
 @Composable
-fun UserProfileDetailItem(label: String, value: String) {
+fun UserProfileDetailItem(
+    label: String,
+    value: String,
+    isEditing: Boolean,
+    onValueChange: (String) -> Unit
+) {
     Column(modifier = Modifier.fillMaxWidth()) {
         Text(text = label, style = MaterialTheme.typography.caption, color = Color.Gray)
-        Text(text = value, style = MaterialTheme.typography.body1, modifier = Modifier.padding(top = 4.dp))
+        if (isEditing && label !in listOf("Name", "Surname", "Email")) {
+            TextField(
+                value = value,
+                onValueChange = onValueChange,
+                singleLine = true,
+                modifier = Modifier.fillMaxWidth()
+            )
+        } else {
+            Text(text = value, style = MaterialTheme.typography.body1, modifier = Modifier.padding(top = 4.dp))
+        }
     }
 }
 
-@Composable
-fun EditProfileButton() {
-    Button(
-        onClick = { /* Implement edit functionality */ },
-        shape = RoundedCornerShape(50),
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp)
-    ) {
-        Text("Edit Profile", fontSize = 16.sp)
-    }
-}
+
