@@ -19,6 +19,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.vectorResource
 import androidx.core.view.WindowCompat
 import androidx.navigation.NavController
@@ -27,6 +28,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.unical.amazing.view.AccountView
 import com.unical.amazing.view.HomeView
+import com.unical.amazing.viewmodel.HomeViewModel
 
 class MainActivity : ComponentActivity() {
     @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
@@ -36,7 +38,7 @@ class MainActivity : ComponentActivity() {
         WindowCompat.setDecorFitsSystemWindows(window, true)
         setContent {
             val navController = rememberNavController()
-
+            val viewmodel = HomeViewModel()
             AmazingTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
@@ -47,7 +49,7 @@ class MainActivity : ComponentActivity() {
                     ) {
                         NavHost(navController, startDestination = "home") {
                             composable("home") {
-                                HomeView()
+                                HomeView(viewmodel)
                             }
                             composable("account") {
                                 AccountView()

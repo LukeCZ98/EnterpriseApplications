@@ -7,7 +7,7 @@ import com.unical.amazing.model.User
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import com.unical.amazing.model.Wishlist
+import com.unical.amazing.model.account.WishlistModel
 class AccountViewModel : ViewModel() {
     private val _user = MutableStateFlow<User?>(null)
     val user: StateFlow<User?> get() = _user
@@ -20,9 +20,6 @@ class AccountViewModel : ViewModel() {
         // Simuliamo una chiamata di rete per ottenere i dati dell'utente,da aggiornare con codice connessione a db
         viewModelScope.launch {
 
-            val itm1: Item = Item("1231","prova1","prova1",22.22,100,"",true)
-            val itm2: Item = Item("131","prova2","prova2",24.22,100,"",true)
-            val itm3: Item = Item("123","prova3","prova3",27.22,100,"",true)
 
             val user = User(
                 id = "12345",
@@ -34,7 +31,7 @@ class AccountViewModel : ViewModel() {
                 country = "Italia",
                 email = "johndoe@example.com",
                 address = "via del tutto eccezionale",
-                wishlists = listOf(),
+                wishlistModels = listOf(),
                 profilePictureUrl = "",
                 orders = listOf()
             )
@@ -53,13 +50,7 @@ class AccountViewModel : ViewModel() {
         // Qui aggiungere la logica per salvare l'utente aggiornato nel database
     }
 
-    fun removeItem(item: Item) {
-        viewModelScope.launch {
-            // Chiamata al tuo database o backend per rimuovere l'elemento
-            // Ad esempio, se stai usando Room:
-            // itemDao.delete(item)
-        }
-    }
+
 
     fun createWishlist() {
         viewModelScope.launch {
@@ -69,7 +60,7 @@ class AccountViewModel : ViewModel() {
         }
     }
 
-    fun removeWishlist(wishlist: Wishlist) {
+    fun removeWishlist(wishlistModel: WishlistModel) {
         viewModelScope.launch {
             // Chiamata al tuo database o backend per rimuovere la lista dei desideri
             // Ad esempio, se stai usando Room:
@@ -85,7 +76,7 @@ class AccountViewModel : ViewModel() {
         }
     }
 
-    fun updateWishlistVisibility(wishlist: Wishlist, isPublic: Boolean) {
+    fun updateWishlistVisibility(wishlistModel: WishlistModel, isPublic: Boolean) {
         viewModelScope.launch {
             // Aggiorna la visibilità della lista dei desideri nel tuo database o backend
             // Ad esempio, se stai usando Room:
@@ -95,3 +86,28 @@ class AccountViewModel : ViewModel() {
     }
 
 }
+
+
+/*
+prendere esempio per gestione thread nelle altre classi
+
+* class HomeViewModel : ViewModel() {
+    var productList by mutableStateOf(emptyList<ProductDto>())
+
+
+
+    fun loadProducts(context: android.content.Context) {
+        viewModelScope.launch(Dispatchers.IO){   //chiamata esterna -> usa un altro thread per chiamate in/out
+            try {
+                // Ottieni la lista dei prodotti dall'API
+                productList = ProductApi().getAll().toList()
+            } catch (e: Exception) {
+                e.printStackTrace()
+                // Gestisci gli errori di connessione o altri problemi
+                Toast.makeText(context, "Errore durante il recupero dei prodotti", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+}
+*
+* */

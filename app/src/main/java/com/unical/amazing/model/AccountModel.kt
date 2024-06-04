@@ -1,5 +1,7 @@
 package com.unical.amazing.model
 
+import com.unical.amazing.model.account.WishlistModel
+
 
 data class User(
     val id: String,
@@ -13,7 +15,7 @@ data class User(
     val country: String,
     val profilePictureUrl: String,
     val orders: List<Order>,
-    val wishlists: List<Wishlist>
+    val wishlistModels: List<WishlistModel>
 )
 
 data class Order(
@@ -38,6 +40,4 @@ data class Item(
     val quantity: Int,
     val image: String,
     val isPublic: Boolean
-) {
-
-}
+)

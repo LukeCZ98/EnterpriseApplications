@@ -9,7 +9,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.unical.amazing.model.Item
-import com.unical.amazing.model.Wishlist
+import com.unical.amazing.model.account.WishlistModel
 import com.unical.amazing.viewmodel.AccountViewModel
 
 @Composable
@@ -19,7 +19,7 @@ fun WishlistScreen(accountViewModel: AccountViewModel = viewModel()) {
     userState.value?.let { user ->
         Column(modifier = Modifier.padding(16.dp)) {
             Text("Wishlist", style = MaterialTheme.typography.h5, modifier = Modifier.padding(bottom = 16.dp))
-            user.wishlists.forEach { wishlist ->
+            user.wishlistModels.forEach { wishlist ->
                 WishlistView(wishlist, accountViewModel)
                 Divider(color = Color.Gray, thickness = 0.5.dp)
             }
@@ -33,8 +33,8 @@ fun WishlistScreen(accountViewModel: AccountViewModel = viewModel()) {
 }
 
 @Composable
-fun WishlistView(wishlist: Wishlist, accountViewModel: AccountViewModel){
-    var isPublic by remember { mutableStateOf(wishlist.isPublic) }
+fun WishlistView(wishlistModel: WishlistModel, accountViewModel: AccountViewModel){
+    var isPublic by remember { mutableStateOf(wishlistModel.isPublic) }
     Card(
         shape = RoundedCornerShape(8.dp),
         backgroundColor = MaterialTheme.colors.surface,
@@ -44,16 +44,16 @@ fun WishlistView(wishlist: Wishlist, accountViewModel: AccountViewModel){
             .padding(vertical = 8.dp)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
-            Text(text = wishlist.name, style = MaterialTheme.typography.body1, color = Color.Black)
-            wishlist.items.forEach { item ->
+            Text(text = wishlistModel.name, style = MaterialTheme.typography.body1, color = Color.Black)
+            wishlistModel.items.forEach { item ->
                 ItemView(item, accountViewModel)
             }
-            Button(onClick = { accountViewModel.removeWishlist(wishlist) }) {
+            Button(onClick = { accountViewModel.removeWishlist(wishlistModel) }) {
                 Text("Rimuovi lista dei desideri")
             }
             Checkbox(checked = isPublic, onCheckedChange = { isChecked ->
                 isPublic = isChecked
-                accountViewModel.updateWishlistVisibility(wishlist, isPublic)
+                accountViewModel.updateWishlistVisibility(wishlistModel, isPublic)
             })
             Text("Pubblico")
         }

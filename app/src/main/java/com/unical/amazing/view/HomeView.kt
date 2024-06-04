@@ -1,11 +1,9 @@
 package com.unical.amazing.view
 
 import android.annotation.SuppressLint
-import android.os.StrictMode
-import android.os.StrictMode.ThreadPolicy
-import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -28,7 +26,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -36,15 +33,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.unical.amazing.swagger.apis.ProductApi
 import com.unical.amazing.swagger.models.ProductDto
-import kotlinx.coroutines.launch
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -52,21 +43,16 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import com.unical.amazing.viewmodel.HomeViewModel
+import coil.compose.rememberAsyncImagePainter
+import androidx.compose.ui.layout.ContentScale
+
 
 
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun HomeView() {
-    val gfgPolicy = ThreadPolicy.Builder().permitAll().build()
-    StrictMode.setThreadPolicy(gfgPolicy)
-
-    val context = LocalContext.current
-    val viewModel: ProductViewModel = viewModel()
-
-    LaunchedEffect(Unit) {
-        viewModel.loadProducts(context)
-    }
+fun HomeView(viewModel: HomeViewModel) {
 
     Scaffold(
         topBar = { SearchBar() },
@@ -151,9 +137,9 @@ fun ProductList(
                     ProductItem(product)
                 }
             }
-            // Aggiungi uno Spacer alla fine della lista per creare spazio
+
             item {
-                Spacer(modifier = Modifier.height(80.dp)) // Adjust the height as needed
+                Spacer(modifier = Modifier.height(80.dp))
             }
         }
     } else {
@@ -188,7 +174,7 @@ fun ProductItem(product: ProductDto) {
             .padding(vertical = 8.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 30.dp),
         colors = CardDefaults.cardColors(
-            containerColor = Color(0xFF6200EE), // Colore vivace, puoi cambiarlo a tuo piacimento
+            containerColor = Color(0xFF6200EE), // Colore vivace
             contentColor = Color.White
         )
     ) {
@@ -196,6 +182,20 @@ fun ProductItem(product: ProductDto) {
             modifier = Modifier
                 .padding(16.dp)
         ) {
+            // Aggiungi immagine del prodotto
+            product.img_url?.let { imageUrl ->
+                Image(
+                    painter = rememberAsyncImagePainter(model = imageUrl),
+                    contentDescription = product.title,
+                    modifier = Modifier
+                        .height(200.dp)
+                        .fillMaxWidth(),
+                    contentScale = ContentScale.Crop
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+            }
+
+            // Mostra il titolo del prodotto
             product.title?.let {
                 Text(
                     text = it,
@@ -203,18 +203,15 @@ fun ProductItem(product: ProductDto) {
                     color = Color.White
                 )
             }
+
             Spacer(modifier = Modifier.height(4.dp))
+
+            // Mostra il prezzo del prodotto
             Text(
                 text = "Prezzo: ${product.price}",
                 fontSize = 16.sp,
                 color = Color.White
             )
-            Spacer(modifier = Modifier.height(4.dp))
-            Text(
-                text = "Descrizione: ${product.description}",
-                fontSize = 14.sp,
-                color = Color.White
-            )
         }
     }
 }
@@ -226,22 +223,3 @@ fun ProductItem(product: ProductDto) {
 
 
 
-
-
-
-class ProductViewModel : ViewModel() {
-    var productList by mutableStateOf(emptyList<ProductDto>())
-        private set
-
-    fun loadProducts(context: android.content.Context) {
-        viewModelScope.launch {
-            try {
-                // Ottieni la lista dei prodotti dall'API
-                productList = ProductApi().getAll().toList()
-            } catch (e: Exception) {
-                // Gestisci gli errori di connessione o altri problemi
-                Toast.makeText(context, "Errore durante il recupero dei prodotti $e", Toast.LENGTH_SHORT).show()
-            }
-        }
-    }
-}

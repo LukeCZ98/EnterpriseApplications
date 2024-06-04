@@ -1,34 +1,45 @@
 package com.unical.amazing.viewmodel
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.unical.amazing.model.Product
-import com.unical.amazing.model.ProductRepository
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
+import com.unical.amazing.swagger.apis.ProductApi
+import com.unical.amazing.swagger.models.ProductDto
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
 
-class HomeViewModel : ViewModel() {
-    private val _products = MutableStateFlow<List<Product>>(emptyList())
-    val products: StateFlow<List<Product>> = _products
-
-    init {
-        fetchProducts()
+class HomeViewModel() : ViewModel() {
+    var productList by mutableStateOf(emptyList<ProductDto>())
+    val productDataFlow: Flow<List<ProductDto>> = automaticRetrieve()
+    private fun automaticRetrieve() : Flow<List<ProductDto>> {
+        return flow {
+            while (true) {
+                try {
+                    // Ottieni la lista dei prodotti dall'API
+                    val products = ProductApi().getAll().toList()
+                    emit(products)
+                    println("Products: $products")
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                    // Gestisci gli errori di connessione o altri problemi
+                    emit(emptyList())
+                }
+                delay(30000)
+            }
+        }.flowOn(Dispatchers.IO)
     }
 
-    private fun fetchProducts() {
+    init {
         viewModelScope.launch {
-            try {
-                // Esegui le operazioni di rete su un thread separato
-                val productList = ProductRepository.fetchProducts()
-                _products.value = productList
-            } catch (e: Exception) {
-                // Gestisci gli errori di rete
-                // Ad esempio, puoi impostare un valore di fallback o mostrare un messaggio di errore
+            productDataFlow.collect { products ->
+                productList = products
             }
         }
     }
 }
-
-
-

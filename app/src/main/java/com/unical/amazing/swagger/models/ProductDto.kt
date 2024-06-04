@@ -18,14 +18,16 @@ package com.unical.amazing.swagger.models
  * @param price 
  * @param description 
  * @param available 
- * @param userId 
+ * @param userId
+ * @param img_url
  */
 data class ProductDto (
-    val id: kotlin.Int? = null,
+    val id: kotlin.Long? = null,
     val title: kotlin.String? = null,
-    val price: kotlin.Float? = null,
+    val price: kotlin.Double? = null,
     val description: kotlin.String? = null,
-    val available: kotlin.Boolean? = null,
-    val userId: kotlin.Long? = null
+    val available: kotlin.String? = null,
+    val userId: kotlin.Long? = null,
+    val img_url: kotlin.String? = null
 ) {
 }

@@ -23,7 +23,7 @@ import io.swagger.client.infrastructure.ServerError
 import io.swagger.client.infrastructure.ServerException
 import io.swagger.client.infrastructure.Success
 
-class ProductApi(basePath: kotlin.String = "http://192.168.1.160:8010/") : ApiClient(basePath) {
+class ProductApi(basePath: kotlin.String = "http://192.168.1.160:8080/") : ApiClient(basePath) {
 
     /**
      * 
@@ -109,7 +109,7 @@ class ProductApi(basePath: kotlin.String = "http://192.168.1.160:8010/") : ApiCl
     fun getAll(): kotlin.Array<ProductDto> {
         val localVariableConfig = RequestConfig(
                 RequestMethod.GET,
-                "/v1/all-products"
+                "/product"
         )
         val response = request<kotlin.Array<ProductDto>>(
                 localVariableConfig
