@@ -27,7 +27,10 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.unical.amazing.view.AccountView
+import com.unical.amazing.view.CartView
 import com.unical.amazing.view.HomeView
+import com.unical.amazing.view.cart.ProductDetailView
+import com.unical.amazing.view.home.SearchResultsView
 import com.unical.amazing.viewmodel.HomeViewModel
 
 class MainActivity : ComponentActivity() {
@@ -49,13 +52,25 @@ class MainActivity : ComponentActivity() {
                     ) {
                         NavHost(navController, startDestination = "home") {
                             composable("home") {
-                                HomeView(viewmodel)
+                                HomeView(viewmodel,navController)
                             }
                             composable("account") {
                                 AccountView()
                             }
                             composable("cart") {
-//                                CartScreen()
+                                CartView()
+                            }
+                            composable("productDetail/{productId}") { backStackEntry ->
+                                val productId = backStackEntry.arguments?.getString("productId")
+                                    ?.toLongOrNull()
+                                val product = viewmodel.productList.find { it.id == productId }
+                                product?.let {
+                                    ProductDetailView(it)
+                                }
+                            }
+                            composable("searchResults/{query}") { backStackEntry ->
+                                val query = backStackEntry.arguments?.getString("query") ?: ""
+                                SearchResultsView(viewmodel, navController, query)
                             }
                         }
                     }

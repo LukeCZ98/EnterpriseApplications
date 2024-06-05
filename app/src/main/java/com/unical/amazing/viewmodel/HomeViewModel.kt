@@ -24,7 +24,6 @@ class HomeViewModel() : ViewModel() {
                     // Ottieni la lista dei prodotti dall'API
                     val products = ProductApi().getAll().toList()
                     emit(products)
-                    println("Products: $products")
                 } catch (e: Exception) {
                     e.printStackTrace()
                     // Gestisci gli errori di connessione o altri problemi
@@ -42,4 +41,22 @@ class HomeViewModel() : ViewModel() {
             }
         }
     }
+
+
+
+    var productsList by mutableStateOf(emptyList<ProductDto>())
+        private set
+
+    fun searchProducts(title: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                productsList = ProductApi().findByTitleLike(title).toList()         //restituisce array vuoto
+            } catch (e: Exception) {
+                // Handle error
+            }
+        }
+        println("productsList: $productsList")
+    }
+
+
 }

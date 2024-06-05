@@ -5,6 +5,7 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -46,19 +47,18 @@ import androidx.compose.material3.CircularProgressIndicator
 import com.unical.amazing.viewmodel.HomeViewModel
 import coil.compose.rememberAsyncImagePainter
 import androidx.compose.ui.layout.ContentScale
-
-
+import androidx.navigation.NavController
 
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun HomeView(viewModel: HomeViewModel) {
-
+fun HomeView(viewModel: HomeViewModel, navController: NavController) {
     Scaffold(
-        topBar = { SearchBar() },
+        topBar = { SearchBar(navController = navController) },
         content = { paddingValues ->
             ProductList(
                 products = viewModel.productList,
+                navController = navController,
                 modifier = Modifier.padding(paddingValues)
             )
         }
@@ -66,9 +66,12 @@ fun HomeView(viewModel: HomeViewModel) {
 }
 
 
+
+
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SearchBar() {
+fun SearchBar(navController: NavController) {
     var text by remember { mutableStateOf("") }
     TopAppBar(
         title = {
@@ -91,11 +94,11 @@ fun SearchBar() {
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(60.dp),
-                        singleLine = true,
+                        singleLine = true
                     )
                 }
                 IconButton(
-                    onClick = { /* handle search click */ },
+                    onClick = { navController.navigate("searchResults/$text") },
                     modifier = Modifier
                         .padding(end = 8.dp)
                 ) {
@@ -110,10 +113,13 @@ fun SearchBar() {
     )
 }
 
+
+
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun ProductList(
     products: List<ProductDto>,
+    navController: NavController,
     modifier: Modifier = Modifier
 ) {
     val visible by remember { mutableStateOf(true) }
@@ -134,7 +140,7 @@ fun ProductList(
                     enter = androidx.compose.animation.fadeIn(animationSpec = tween(durationMillis = 1000)),
                     exit = androidx.compose.animation.fadeOut(animationSpec = tween(durationMillis = 1000))
                 ) {
-                    ProductItem(product)
+                    ProductItem(product, navController)
                 }
             }
 
@@ -165,16 +171,20 @@ fun ProductList(
 
 
 
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
+
+
 @Composable
-fun ProductItem(product: ProductDto) {
+fun ProductItem(product: ProductDto, navController: NavController) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 8.dp),
+            .padding(vertical = 8.dp)
+            .clickable {
+                navController.navigate("productDetail/${product.id}")
+            },
         elevation = CardDefaults.cardElevation(defaultElevation = 30.dp),
         colors = CardDefaults.cardColors(
-            containerColor = Color(0xFF6200EE), // Colore vivace
+            containerColor = Color(0xFF6200EE),
             contentColor = Color.White
         )
     ) {
@@ -182,7 +192,6 @@ fun ProductItem(product: ProductDto) {
             modifier = Modifier
                 .padding(16.dp)
         ) {
-            // Aggiungi immagine del prodotto
             product.img_url?.let { imageUrl ->
                 Image(
                     painter = rememberAsyncImagePainter(model = imageUrl),
@@ -195,7 +204,6 @@ fun ProductItem(product: ProductDto) {
                 Spacer(modifier = Modifier.height(8.dp))
             }
 
-            // Mostra il titolo del prodotto
             product.title?.let {
                 Text(
                     text = it,
@@ -206,15 +214,18 @@ fun ProductItem(product: ProductDto) {
 
             Spacer(modifier = Modifier.height(4.dp))
 
-            // Mostra il prezzo del prodotto
-            Text(
-                text = "Prezzo: ${product.price}",
-                fontSize = 16.sp,
-                color = Color.White
-            )
+            product.price?.let {
+                Text(
+                    text = "€ $it",
+                    fontSize = 16.sp,
+                    color = Color.White
+                )
+            }
         }
     }
 }
+
+
 
 
 
