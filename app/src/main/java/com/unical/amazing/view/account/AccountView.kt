@@ -1,6 +1,6 @@
-package com.unical.amazing.view
+package com.unical.amazing.view.account
 
-import androidx.compose.foundation.Image
+import android.annotation.SuppressLint
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -16,18 +16,15 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.unical.amazing.R
-import com.unical.amazing.view.account.OrdersHistoryScreen
-import com.unical.amazing.view.account.UserProfileScreen
-import com.unical.amazing.view.account.WishlistScreen
 
 @Composable
-fun AccountView() {
+fun AccountView(onLogout: () -> Unit) {
     val accountNavController = rememberNavController()
 
     Surface(color = MaterialTheme.colors.background, modifier = Modifier.fillMaxSize()) {
         NavHost(navController = accountNavController, startDestination = "main") {
             composable("main") {
-                AccountMainScreen(accountNavController)
+                AccountMainScreen(accountNavController, onLogout)
             }
             composable("profile") {
                 UserProfileScreen()
@@ -43,7 +40,7 @@ fun AccountView() {
 }
 
 @Composable
-fun AccountMainScreen(navController: NavController) {
+fun AccountMainScreen(navController: NavController, onLogout: () -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -54,20 +51,19 @@ fun AccountMainScreen(navController: NavController) {
             style = MaterialTheme.typography.h4,
             modifier = Modifier.padding(bottom = 16.dp)
         )
-        AccountOptions(navController)
+        AccountOptions(navController, onLogout)
     }
 }
 
-
-
-
+@SuppressLint("PrivateResource")
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun AccountOptions(navController: NavController) {
+fun AccountOptions(navController: NavController, onLogout: () -> Unit) {
     val items = listOf(
         "I miei dati" to "profile",
         "I miei ordini" to "orders",
-        "Liste desideri" to "wishlist"
+        "Liste desideri" to "wishlist",
+        "Logout" to null
     )
 
     Column {
@@ -80,7 +76,7 @@ fun AccountOptions(navController: NavController) {
                     .fillMaxWidth()
                     .padding(vertical = 8.dp)
                     .clickable {
-                        navController.navigate(route)
+                        route?.let { navController.navigate(it) } ?: onLogout()
                     }
             ) {
                 ListItem(
@@ -90,6 +86,7 @@ fun AccountOptions(navController: NavController) {
                             "profile" -> Icon(painterResource(id = R.drawable.person_24px), contentDescription = null)
                             "orders" -> Icon(painterResource(id = R.drawable.receipt_long_24px), contentDescription = null)
                             "wishlist" -> Icon(painterResource(id = R.drawable.list_alt_24px), contentDescription = null)
+                            null -> Icon(painterResource(id = R.drawable.logout), contentDescription = null)
                         }
                     },
                     modifier = Modifier.padding(8.dp)

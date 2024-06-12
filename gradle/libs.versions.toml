@@ -1,6 +1,7 @@
 [versions]
 activityComposeVersion = "1.7.1"
 agp = "8.4.0"
+bcprovJdk15on = "1.70"
 composeBomVersion = "2023.01.00"
 coreKtxVersion = "1.9.0"
 kotlin = "1.9.0"
@@ -28,6 +29,7 @@ composeBom = "2024.05.00"
 lifecycleRuntimeKtxVersion = "2.6.1"
 lifecycleViewmodelCompose = "2.8.0"
 lifecycleViewmodelKtx = "2.8.0"
+lifecycleViewmodelKtxVersion = "version"
 material = "1.12.0"
 constraintlayout = "2.1.4"
 material3 = "1.2.1"
@@ -59,10 +61,12 @@ androidx-core-ktx-v190 = { module = "androidx.core:core-ktx", version.ref = "cor
 androidx-lifecycle-runtime-ktx-v261 = { module = "androidx.lifecycle:lifecycle-runtime-ktx", version.ref = "lifecycleRuntimeKtxVersion" }
 androidx-lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycleViewmodelCompose" }
 androidx-lifecycle-viewmodel-ktx = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx", version.ref = "lifecycleViewmodelKtx" }
+androidx-lifecycle-viewmodel-ktx-vversion = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx", version.ref = "lifecycleViewmodelKtxVersion" }
 androidx-material = { module = "androidx.compose.material:material", version.ref = "materialVersion" }
 androidx-material3-v100alpha01 = { module = "androidx.compose.material3:material3", version.ref = "material3Version" }
 androidx-navigation-compose-v240alpha10 = { module = "androidx.navigation:navigation-compose", version.ref = "navigationComposeVersion" }
 androidx-ui-v110 = { module = "androidx.compose.ui:ui", version.ref = "uiVersion" }
+bcprov-jdk15on = { module = "org.bouncycastle:bcprov-jdk15on", version.ref = "bcprovJdk15on" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }

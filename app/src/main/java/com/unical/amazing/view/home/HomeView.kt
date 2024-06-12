@@ -1,4 +1,4 @@
-package com.unical.amazing.view
+package com.unical.amazing.view.home
 
 import android.annotation.SuppressLint
 import androidx.compose.animation.AnimatedVisibility

@@ -1,6 +1,7 @@
 package com.unical.amazing.swagger.apis
 
-import com.unical.amazing.swagger.models.OrderDto
+import android.content.Context
+import com.unical.amazing.R
 import com.unical.amazing.swagger.models.ProductDto
 import io.swagger.client.infrastructure.ApiClient
 import io.swagger.client.infrastructure.ClientError
@@ -11,8 +12,12 @@ import io.swagger.client.infrastructure.ResponseType
 import io.swagger.client.infrastructure.ServerError
 import io.swagger.client.infrastructure.ServerException
 import io.swagger.client.infrastructure.Success
+import io.swagger.client.infrastructure.createSecureClient
 
-class ProductApi(basePath: kotlin.String = "http://192.168.1.160:8080/") : ApiClient(basePath) {
+class ProductApi(
+    context: Context, // Aggiungi il Context come parametro
+    basePath: String = "https://192.168.1.160:8443/"
+) : ApiClient(basePath, createSecureClient(context, R.raw.truststore,"progettoea")) {
 
     /**
      * 

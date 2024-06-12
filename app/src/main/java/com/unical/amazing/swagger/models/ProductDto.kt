@@ -26,7 +26,7 @@ data class ProductDto (
     val title: kotlin.String? = null,
     val price: kotlin.Double? = null,
     val description: kotlin.String? = null,
-    val available: kotlin.String? = null,
+    val available: kotlin.Boolean? = null,
     val userId: kotlin.Long? = null,
     val img_url: kotlin.String? = null
 ) {

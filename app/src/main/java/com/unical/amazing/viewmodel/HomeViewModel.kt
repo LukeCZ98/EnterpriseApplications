@@ -1,5 +1,6 @@
 package com.unical.amazing.viewmodel
 
+import android.content.Context
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -14,15 +15,19 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
 
-class HomeViewModel() : ViewModel() {
+class HomeViewModel(context: Context) : ViewModel() {
+
+
+
     var productList by mutableStateOf(emptyList<ProductDto>())
     val productDataFlow: Flow<List<ProductDto>> = automaticRetrieve()
+    val context = context
     private fun automaticRetrieve() : Flow<List<ProductDto>> {
         return flow {
             while (true) {
                 try {
                     // Ottieni la lista dei prodotti dall'API
-                    val products = ProductApi().getAll().toList()
+                    val products = ProductApi(context).getAll().toList()
                     emit(products)
                 } catch (e: Exception) {
                     e.printStackTrace()
@@ -50,12 +55,11 @@ class HomeViewModel() : ViewModel() {
     fun searchProducts(title: String) {
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                productsList = ProductApi().findByTitleLike(title).toList()         //restituisce array vuoto
+                productsList = ProductApi(context).findByTitleLike(title).toList()         //restituisce array vuoto
             } catch (e: Exception) {
                 // Handle error
             }
         }
-        println("productsList: $productsList")
     }
 
 

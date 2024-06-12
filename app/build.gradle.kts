@@ -100,8 +100,10 @@ dependencies {
     // Kotlinx serialization
     implementation(libs.kotlinx.serialization.json)
     implementation (libs.androidx.lifecycle.viewmodel.ktx)
+
     implementation(libs.okhttp.v493)
     implementation(libs.kotlinx.serialization.json.v132)
+    implementation (libs.bcprov.jdk15on)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
