@@ -1,32 +1,51 @@
 package com.unical.amazing.viewmodel.auth
 
 import android.content.Context
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.unical.amazing.swagger.apis.AuthApi
+import io.ktor.http.cio.Response
+import io.swagger.client.infrastructure.ResponseType
+import io.swagger.client.infrastructure.Success
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
-class AuthViewModel(context : Context):ViewModel() {
-
+class AuthViewModel(context: Context) : ViewModel() {
 
     private val authApi = AuthApi(context)
 
-    var authResponse by mutableStateOf<Map<String, Any?>?>(null)
-        private set
-
-    fun login(body: Map<String, String>) {
-        viewModelScope.launch(Dispatchers.IO) {
+    suspend fun login(body: Map<String, String>): Map<String, Any?>? {
+        return withContext(Dispatchers.IO) {
             try {
-                val result = authApi.login(body) as? Map<String, Any?>
-                authResponse = result
+                authApi.login(body) as? Map<String, Any?>
             } catch (e: Exception) {
                 e.printStackTrace()
-                authResponse = null
+                null
             }
         }
     }
+
+    suspend fun register(body: Map<String, String>): String? {
+        return withContext(Dispatchers.IO) {
+            try {
+                // Esegui la richiesta di registrazione
+                val response: Any = authApi.register(body)
+
+                // Controlla se la risposta è un successo e il codice di stato è 200
+                if (response is Map<*, *> && response["statusCode"] == 200) {
+                    "200"
+                } else {
+                    // Puoi adattare cosa restituire in altri casi di successo
+                    response.toString()
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+                null
+            }
+        }
+    }
+
+
+
+
+
 }

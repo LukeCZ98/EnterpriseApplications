@@ -32,7 +32,6 @@ import com.unical.amazing.view.cart.ProductDetailView
 import com.unical.amazing.view.home.HomeView
 import com.unical.amazing.view.home.SearchResultsView
 import com.unical.amazing.viewmodel.HomeViewModel
-import com.unical.amazing.view.auth.RegisterScreen
 
 class MainActivity : ComponentActivity() {
     private lateinit var sharedPreferences: SharedPreferences
@@ -61,11 +60,9 @@ class MainActivity : ComponentActivity() {
                             logout(isLoggedIn)
                         }
                     } else {
-                        AuthNavHost(authNavController, { username, password, rememberMe ->
-                            login(username, password, rememberMe, isLoggedIn)
-                        }, { username, password, email, firstName, lastName ->
+                        AuthNavHost(authNavController,isLoggedIn) { username, password, email, firstName, lastName ->
                             register(username, password, email, firstName, lastName, isLoggedIn)
-                        })
+                        }
 
                     }
                 }
@@ -79,29 +76,9 @@ class MainActivity : ComponentActivity() {
         return !username.isNullOrEmpty() && !password.isNullOrEmpty()
     }
 
-    private fun login(username: String, password: String, rememberMe: Boolean, isLoggedIn: MutableState<Boolean>) {
-        // Simulating a successful login
-        if (rememberMe) {
-            with(sharedPreferences.edit()) {
-                putString("username", username)
-                putString("password", password)
-                apply()
-            }
-        }
-        isLoggedIn.value = true
-    }
-
     private fun register(username: String, password: String, email: String, firstName: String, lastName: String, isLoggedIn: MutableState<Boolean>) {
         // Simulate registration and save the credentials
-        with(sharedPreferences.edit()) {
-            putString("username", username)
-            putString("password", password)
-            putString("email", email)
-            putString("firstName", firstName)
-            putString("lastName", lastName)
-            apply()
-        }
-        isLoggedIn.value = true
+
     }
 
 
@@ -117,10 +94,14 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun AuthNavHost(authNavController: NavHostController, login: (String, String, Boolean) -> Unit, register: (String, String, String, String, String) -> Unit) {
+fun AuthNavHost(
+    authNavController: NavHostController,
+    isLoggedIn: MutableState<Boolean>,
+    register: (String, String, String, String, String) -> Unit
+) {
     NavHost(authNavController, startDestination = "login") {
         composable("login") {
-            AuthScreen(authNavController, login, register)
+            AuthScreen(authNavController,isLoggedIn, register)
         }
         // Non è necessario un composable separato per la registrazione se si utilizza una singola schermata
     }

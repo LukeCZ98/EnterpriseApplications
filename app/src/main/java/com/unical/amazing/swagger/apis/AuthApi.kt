@@ -42,4 +42,33 @@ class AuthApi(context: Context, // Aggiungi il Context come parametro
             ResponseType.ServerError -> throw ServerException((response as ServerError<*>).message ?: "Server error")
         }
     }
+
+
+    @Suppress("UNCHECKED_CAST")
+    fun register(body: kotlin.collections.Map<String, String>): kotlin.Any {
+        val localVariableBody: kotlin.Any? = body
+        val localVariableConfig = RequestConfig(
+            RequestMethod.POST,
+            "/auth/register"
+        )
+        val response = request<kotlin.Any>(
+            localVariableConfig, localVariableBody
+        )
+
+        return when (response.responseType) {
+            ResponseType.Success -> (response as Success<*>).data as kotlin.Any
+            ResponseType.Informational -> TODO()
+            ResponseType.Redirection -> TODO()
+            ResponseType.ClientError -> throw ClientException((response as ClientError<*>).body as? String ?: "Client error")
+            ResponseType.ServerError -> throw ServerException((response as ServerError<*>).message ?: "Server error")
+        }
+    }
+
+
+
+
+
+
+
+
 }
