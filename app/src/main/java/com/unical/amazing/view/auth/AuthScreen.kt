@@ -97,11 +97,19 @@ fun AuthScreen(
     }
 
 
-    //TODO --> inserire regex corrispondenti a questa nel backend
+    /*
+    * (?=.*[A-Z]): Assicura che ci sia almeno una lettera maiuscola.
+      (?=.*[a-z]): Assicura che ci sia almeno una lettera minuscola.
+      (?=.*\\d): Assicura che ci sia almeno un numero.
+      (?=.*[!@#$%^&*]): Assicura che ci sia almeno un carattere speciale tra quelli specificati.
+      [A-Za-z\\d!@#$%^&*]{6,32}: Definisce il set di caratteri ammessi e impone che la lunghezza sia tra 6 e 32 caratteri.
+    * */
+
+
 
     // Gestione click registrazione
     val handleRegisterClick: () -> Unit = {
-        val passwordRegex = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[!@#\$%^&*])[A-Za-z\\d!@#\$%^&*]{8,}$".toRegex()
+        val passwordRegex = "^(?=.*[A-Z])(?=.*[a-z])(?=.*\\\\d)(?=.*[!@#\$%^&*])[A-Za-z\\\\d!@#\$%^&*]{8,32}\$".toRegex()
         val emailRegex = "[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+".toRegex()
 
         if (password == confirmPassword && username.isNotBlank() && password.isNotBlank() &&
