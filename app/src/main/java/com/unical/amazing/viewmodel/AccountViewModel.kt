@@ -8,6 +8,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import com.unical.amazing.model.account.WishlistModel
+import kotlinx.coroutines.Dispatchers
+
 class AccountViewModel : ViewModel() {
     private val _user = MutableStateFlow<User?>(null)
     val user: StateFlow<User?> get() = _user
@@ -18,13 +20,12 @@ class AccountViewModel : ViewModel() {
 
     private fun fetchUserData() {
         // Simuliamo una chiamata di rete per ottenere i dati dell'utente,da aggiornare con codice connessione a db
-        viewModelScope.launch {
-
+        viewModelScope.launch(Dispatchers.IO) {
 
             val user = User(
                 id = "12345",
-                name = "John ",
-                surname = "Doe",
+                firstName = "John ",
+                lastName = "Doe",
                 phone = 123456789,
                 CAP = 88100,
                 city = "Catanzaro",

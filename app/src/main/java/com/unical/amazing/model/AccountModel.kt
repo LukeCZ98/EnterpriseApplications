@@ -5,8 +5,8 @@ import com.unical.amazing.model.account.WishlistModel
 
 data class User(
     val id: String,
-    val name: String,
-    val surname: String,
+    val firstName: String,
+    val lastName: String,
     val email: String,
     val address: String,
     val phone: Int,

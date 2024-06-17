@@ -11,19 +11,23 @@
  */
 package io.swagger.client.models
 
+import com.unical.amazing.model.Order
+import com.unical.amazing.model.account.WishlistModel
 
-/**
- * 
- * @param email 
- * @param firstName 
- * @param lastName 
- * @param id 
- */
+
+
 data class UserDto (
 
-    val email: kotlin.String? = null,
-    val firstName: kotlin.String? = null,
-    val lastName: kotlin.String? = null,
-    val id: kotlin.Long? = null
-) {
-}
+    val id: String,
+    val firstName: String,
+    val surname: String,
+    val email: String,
+    val address: String,
+    val phone: Int,
+    val CAP: Int,
+    val city: String,
+    val country: String,
+    val profilePictureUrl: String,
+    val orders: List<Order>,
+    val wishlistModels: List<WishlistModel>
+)

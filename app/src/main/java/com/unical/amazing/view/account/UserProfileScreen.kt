@@ -7,7 +7,6 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
@@ -20,7 +19,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.rememberImagePainter
 import com.unical.amazing.model.User
@@ -115,7 +113,7 @@ fun UserProfileHeader(user: User, onProfileImageChange: (Uri) -> Unit) {
             }
             Spacer(modifier = Modifier.width(16.dp))
             Column {
-                Text(text = user.name, style = MaterialTheme.typography.h5)
+                Text(text = user.firstName, style = MaterialTheme.typography.h5)
                 Text(text = user.email, style = MaterialTheme.typography.body1, color = Color.Gray)
             }
         }
@@ -135,17 +133,17 @@ fun UserProfileDetails(user: User, onSave: (User) -> Unit) {
         Column(modifier = Modifier.padding(16.dp)) {
             UserProfileDetailItem(
                 label = "Name",
-                value = editableUser.name,
+                value = editableUser.firstName,
                 isEditing = false, // Name is not editable
-                onValueChange = { editableUser = editableUser.copy(name = it) }
+                onValueChange = { editableUser = editableUser.copy(firstName = it) }
             )
             Divider(color = Color.Gray, thickness = 0.5.dp, modifier = Modifier.padding(vertical = 8.dp))
 
             UserProfileDetailItem(
                 label = "Surname",
-                value = editableUser.surname,
+                value = editableUser.lastName,
                 isEditing = false, // Surname is not editable
-                onValueChange = { editableUser = editableUser.copy(surname = it) }
+                onValueChange = { editableUser = editableUser.copy(lastName = it) }
             )
             Divider(color = Color.Gray, thickness = 0.5.dp, modifier = Modifier.padding(vertical = 8.dp))
 

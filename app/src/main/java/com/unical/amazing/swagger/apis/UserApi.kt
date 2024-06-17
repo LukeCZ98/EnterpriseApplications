@@ -11,12 +11,16 @@
  */
 package io.swagger.client.apis
 
+import android.content.Context
+import com.unical.amazing.R
 import io.swagger.client.models.NewUserDto
 import io.swagger.client.models.UserDto
 
 import io.swagger.client.infrastructure.*
 
-class UserApi(basePath: kotlin.String = "http://localhost:8010/") : ApiClient(basePath) {
+class UserApi(context: Context, // Aggiungi il Context come parametro
+              basePath: String = "https://192.168.1.160:8443/"
+) : ApiClient(basePath, createSecureClient(context, R.raw.truststore,"progettoea")) {
 
     /**
      * 
@@ -67,4 +71,13 @@ class UserApi(basePath: kotlin.String = "http://localhost:8010/") : ApiClient(ba
             ResponseType.ServerError -> throw ServerException((response as ServerError<*>).message ?: "Server error")
         }
     }
+
+    //TODO() --> creare metodo per estrarre dati area personale con token
+    /*
+    * ###
+        GET https://localhost:8443/auth/me
+        Authorization: Bearer token
+        User-Agent: IntelliJ HTTP Client
+    * */
+
 }
