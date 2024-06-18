@@ -8,6 +8,7 @@ import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -20,14 +21,14 @@ import com.unical.amazing.R
 @Composable
 fun AccountView(onLogout: () -> Unit) {
     val accountNavController = rememberNavController()
-
+    val context = LocalContext.current
     Surface(color = MaterialTheme.colors.background, modifier = Modifier.fillMaxSize()) {
         NavHost(navController = accountNavController, startDestination = "main") {
             composable("main") {
                 AccountMainScreen(accountNavController, onLogout)
             }
             composable("profile") {
-                UserProfileScreen()
+                UserProfileScreen(context)
             }
             composable("orders") {
                 OrdersHistoryScreen()

@@ -18,11 +18,11 @@ import com.unical.amazing.viewmodel.AccountViewModel
 @Composable
 fun OrdersHistoryScreen(accountViewModel: AccountViewModel = viewModel()) {
     val userState = accountViewModel.user.collectAsState()
-
+    //TODO -> aggiornare con il rispettivo codice per leggere gli ordini
     userState.value?.let { user ->
         Column(modifier = Modifier.padding(16.dp)) {
             Text("Orders History", style = MaterialTheme.typography.h5, modifier = Modifier.padding(bottom = 16.dp))
-            user.orders.forEach { order ->
+            user.orders?.forEach { order ->
                 OrderItemView(order)
                 Divider(color = Color.Gray, thickness = 0.5.dp)
             }

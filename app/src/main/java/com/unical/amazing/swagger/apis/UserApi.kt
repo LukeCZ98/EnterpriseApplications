@@ -77,10 +77,13 @@ class UserApi(context: Context, // Aggiungi il Context come parametro
 
 
     @Suppress("UNCHECKED_CAST")
-    fun account(): UserDto {
+    fun account(token: String): UserDto {
+        val headers = mapOf("Authorization" to "Bearer $token")
         val localVariableConfig = RequestConfig(
             RequestMethod.GET,
-            "/auth/me")
+            "/auth/me",
+            headers = headers
+            )
         val response = request<UserDto>(
             localVariableConfig
         )
@@ -105,8 +108,6 @@ class UserApi(context: Context, // Aggiungi il Context come parametro
         GET https://localhost:8443/auth/me
         Authorization: Bearer token
         User-Agent: IntelliJ HTTP Client
-        * "",
-"",
 
     * */
 

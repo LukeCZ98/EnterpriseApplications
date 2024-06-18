@@ -1,5 +1,6 @@
 package com.unical.amazing.view.account
 
+import android.content.Context
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -21,12 +22,15 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.rememberImagePainter
-import com.unical.amazing.model.User
-import com.unical.amazing.viewmodel.AccountViewModel
+import com.unical.amazing.viewmodel.UserProfileViewModelFactory
+import com.unical.amazing.viewmodel.account.UserProfileViewModel
+import io.swagger.client.models.UserDto
 
 @Composable
-fun UserProfileScreen(accountViewModel: AccountViewModel = viewModel()) {
-    val userState = accountViewModel.user.collectAsState()
+fun UserProfileScreen(context: Context) {
+    val viewModelFactory = remember { UserProfileViewModelFactory(context) }
+    val userprofileviewModel: UserProfileViewModel = viewModel(factory = viewModelFactory)
+    val userState = userprofileviewModel.user.collectAsState()
 
     userState.value?.let { user ->
         Scaffold(
@@ -49,13 +53,13 @@ fun UserProfileScreen(accountViewModel: AccountViewModel = viewModel()) {
             ) {
                 item {
                     UserProfileHeader(user) { uri ->
-                        accountViewModel.updateUserProfilePicture(uri.toString())
+                        userprofileviewModel.updateUserProfilePicture(uri.toString())
                     }
                     Spacer(modifier = Modifier.height(16.dp))
                 }
                 item {
                     UserProfileDetails(user) { updatedUser ->
-                        accountViewModel.updateUser(updatedUser)
+                        userprofileviewModel.updateUser(updatedUser)
                     }
                     Spacer(modifier = Modifier.height(16.dp))
                 }
@@ -72,7 +76,7 @@ fun UserProfileScreen(accountViewModel: AccountViewModel = viewModel()) {
 }
 
 @Composable
-fun UserProfileHeader(user: User, onProfileImageChange: (Uri) -> Unit) {
+fun UserProfileHeader(user: UserDto, onProfileImageChange: (Uri) -> Unit) {
     var profileImageUri by remember { mutableStateOf<Uri?>(null) }
     val imagePickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent(),
@@ -93,7 +97,7 @@ fun UserProfileHeader(user: User, onProfileImageChange: (Uri) -> Unit) {
         ) {
             Box(modifier = Modifier.size(80.dp)) {
                 Image(
-                    painter = rememberImagePainter(profileImageUri ?: user.profilePictureUrl),
+                    painter = rememberImagePainter(profileImageUri ?: user.picurl),
                     contentDescription = "User Profile Picture",
                     modifier = Modifier
                         .size(80.dp)
@@ -113,7 +117,7 @@ fun UserProfileHeader(user: User, onProfileImageChange: (Uri) -> Unit) {
             }
             Spacer(modifier = Modifier.width(16.dp))
             Column {
-                Text(text = user.firstName, style = MaterialTheme.typography.h5)
+                Text(text = user.username, style = MaterialTheme.typography.h5)
                 Text(text = user.email, style = MaterialTheme.typography.body1, color = Color.Gray)
             }
         }
@@ -121,7 +125,7 @@ fun UserProfileHeader(user: User, onProfileImageChange: (Uri) -> Unit) {
 }
 
 @Composable
-fun UserProfileDetails(user: User, onSave: (User) -> Unit) {
+fun UserProfileDetails(user: UserDto, onSave: (UserDto) -> Unit) {
     var isEditing by remember { mutableStateOf(false) }
     var editableUser by remember { mutableStateOf(user) }
 
@@ -148,6 +152,14 @@ fun UserProfileDetails(user: User, onSave: (User) -> Unit) {
             Divider(color = Color.Gray, thickness = 0.5.dp, modifier = Modifier.padding(vertical = 8.dp))
 
             UserProfileDetailItem(
+                label = "Username",
+                value = editableUser.username,
+                isEditing = false, // Surname is not editable
+                onValueChange = { editableUser = editableUser.copy(username = it) }
+            )
+            Divider(color = Color.Gray, thickness = 0.5.dp, modifier = Modifier.padding(vertical = 8.dp))
+
+            UserProfileDetailItem(
                 label = "Email",
                 value = editableUser.email,
                 isEditing = false, // Email is not editable
@@ -157,17 +169,28 @@ fun UserProfileDetails(user: User, onSave: (User) -> Unit) {
 
             UserProfileDetailItem(
                 label = "Address",
-                value = editableUser.address,
+                value = editableUser.addresses.get(0).address,
                 isEditing = isEditing,
-                onValueChange = { editableUser = editableUser.copy(address = it) }
+                onValueChange = { newAddress ->
+                    // Copia l'indirizzo corrente
+                    val updatedAddress = editableUser.addresses[0].copy(address = newAddress)
+
+                    // Aggiorna la lista degli indirizzi con l'indirizzo modificato
+                    val updatedAddresses = editableUser.addresses.toMutableList().apply {
+                        this[0] = updatedAddress
+                    }
+
+                    // Aggiorna editableUser con la nuova lista di indirizzi
+                    editableUser = editableUser.copy(addresses = updatedAddresses)
+                }
             )
             Divider(color = Color.Gray, thickness = 0.5.dp, modifier = Modifier.padding(vertical = 8.dp))
 
             UserProfileDetailItem(
                 label = "Phone",
-                value = editableUser.phone.toString(),
+                value = editableUser.phone,
                 isEditing = isEditing,
-                onValueChange = { editableUser = editableUser.copy(phone = it.toInt()) }
+                onValueChange = { editableUser = editableUser.copy(phone = it) }
             )
             Divider(color = Color.Gray, thickness = 0.5.dp, modifier = Modifier.padding(vertical = 8.dp))
 

@@ -1,52 +1,45 @@
 package com.unical.amazing.viewmodel
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.unical.amazing.model.Item
-import com.unical.amazing.model.User
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import com.unical.amazing.model.account.WishlistModel
+import com.unical.amazing.viewmodel.auth.AuthViewModel
+import io.swagger.client.apis.UserApi
+import io.swagger.client.models.UserDto
 import kotlinx.coroutines.Dispatchers
 
-class AccountViewModel : ViewModel() {
-    private val _user = MutableStateFlow<User?>(null)
-    val user: StateFlow<User?> get() = _user
+class AccountViewModel(context: Context) : ViewModel() {
+    private val _user = MutableStateFlow<UserDto?>(null)
+    val user: StateFlow<UserDto?> get() = _user
+    private val token = AuthViewModel(context).getToken()
+    private val usr = UserApi(context)
 
     init {
         fetchUserData()
     }
 
+
+
     private fun fetchUserData() {
         // Simuliamo una chiamata di rete per ottenere i dati dell'utente,da aggiornare con codice connessione a db
         viewModelScope.launch(Dispatchers.IO) {
-
-            val user = User(
-                id = "12345",
-                firstName = "John ",
-                lastName = "Doe",
-                phone = 123456789,
-                CAP = 88100,
-                city = "Catanzaro",
-                country = "Italia",
-                email = "johndoe@example.com",
-                address = "via del tutto eccezionale",
-                wishlistModels = listOf(),
-                profilePictureUrl = "",
-                orders = listOf()
-            )
+            val user = token?.let { usr.account(it) }
             _user.value = user
         }
     }
 
     fun updateUserProfilePicture(newProfilePictureUri: String) {
         val currentUser = _user.value ?: return
-        val updatedUser = currentUser.copy(profilePictureUrl = newProfilePictureUri)
+        val updatedUser = currentUser.copy(picurl = newProfilePictureUri)
         _user.value = updatedUser
     }
 
-    fun updateUser(updatedUser: User) {
+    fun updateUser(updatedUser: UserDto) {
         _user.value = updatedUser
         // Qui aggiungere la logica per salvare l'utente aggiornato nel database
     }

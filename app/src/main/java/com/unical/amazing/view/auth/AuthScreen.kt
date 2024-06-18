@@ -120,12 +120,13 @@ fun AuthScreen(
                     coroutineScope.launch {
                         val regData = mapOf("username" to username,"email" to email, "password" to password,"firstName" to firstName,"lastName" to lastName)
                         val response = auth.register(regData)
-                        if(response == "200"){
+                        if(response == "200"){  //CORREGERE QUESTA PARTE PER VISUALIZZARE IL MESSAGGIO DI REGISTRAZIONE E
+                                                 //NAVIGARE SULLA SCHERMATA DI LOGIN
+                            errorMessage = "Registrazione avvenuta correttamente,\n ora verificare la mail per attivare il tuo account."
                             onRegister(username, password, email, firstName, lastName)
                             navController.navigate("login") { popUpTo("login") { inclusive = true } }
                         }
                     }
-                    errorMessage = "Registrazione avvenuta correttamente,\n ora verificare la mail per attivare il tuo account."
                 }
                 else {
                     errorMessage = "L'email non è valida."

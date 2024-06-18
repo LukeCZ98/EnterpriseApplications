@@ -19,7 +19,7 @@ fun WishlistScreen(accountViewModel: AccountViewModel = viewModel()) {
     userState.value?.let { user ->
         Column(modifier = Modifier.padding(16.dp)) {
             Text("Wishlist", style = MaterialTheme.typography.h5, modifier = Modifier.padding(bottom = 16.dp))
-            user.wishlistModels.forEach { wishlist ->
+            user.wishlistModels?.forEach { wishlist ->
                 WishlistView(wishlist, accountViewModel)
                 Divider(color = Color.Gray, thickness = 0.5.dp)
             }

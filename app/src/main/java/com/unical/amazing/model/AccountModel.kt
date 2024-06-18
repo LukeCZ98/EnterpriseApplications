@@ -5,15 +5,16 @@ import com.unical.amazing.model.account.WishlistModel
 
 data class User(
     val id: String,
+    val username: String,
     val firstName: String,
     val lastName: String,
     val email: String,
     val address: String,
-    val phone: Int,
+    val phone: String,
     val CAP: Int,
     val city: String,
     val country: String,
-    val profilePictureUrl: String,
+    val picurl: String,
     val orders: List<Order>,
     val wishlistModels: List<WishlistModel>
 )
