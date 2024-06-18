@@ -109,7 +109,7 @@ fun AuthScreen(
 
     // Gestione click registrazione
     val handleRegisterClick: () -> Unit = {
-        val passwordRegex = "^(?=.*[A-Z])(?=.*[a-z])(?=.*\\\\d)(?=.*[!@#\$%^&*])[A-Za-z\\\\d!@#\$%^&*]{8,32}\$".toRegex()
+        val passwordRegex = "^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[!@#\$%^&*])[A-Za-z\\d!@#\$%^&*]{8,32}$".toRegex()
         val emailRegex = "[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+".toRegex()
 
         if (password == confirmPassword && username.isNotBlank() && password.isNotBlank() &&
@@ -121,13 +121,11 @@ fun AuthScreen(
                         val regData = mapOf("username" to username,"email" to email, "password" to password,"firstName" to firstName,"lastName" to lastName)
                         val response = auth.register(regData)
                         if(response == "200"){
-                            errorMessage = "Registrazione avvenuta correttamente,\n ora verificare la mail per attivare il tuo account."
                             onRegister(username, password, email, firstName, lastName)
                             navController.navigate("login") { popUpTo("login") { inclusive = true } }
                         }
                     }
-
-
+                    errorMessage = "Registrazione avvenuta correttamente,\n ora verificare la mail per attivare il tuo account."
                 }
                 else {
                     errorMessage = "L'email non è valida."

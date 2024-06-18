@@ -72,12 +72,42 @@ class UserApi(context: Context, // Aggiungi il Context come parametro
         }
     }
 
-    //TODO() --> creare metodo per estrarre dati area personale con token
+
+
+
+
+    @Suppress("UNCHECKED_CAST")
+    fun account(): UserDto {
+        val localVariableConfig = RequestConfig(
+            RequestMethod.GET,
+            "/auth/me")
+        val response = request<UserDto>(
+            localVariableConfig
+        )
+
+        return when (response.responseType) {
+            ResponseType.Success -> (response as Success<*>).data as UserDto
+            ResponseType.Informational -> TODO()
+            ResponseType.Redirection -> TODO()
+            ResponseType.ClientError -> throw ClientException((response as ClientError<*>).body as? String ?: "Client error")
+            ResponseType.ServerError -> throw ServerException((response as ServerError<*>).message ?: "Server error")
+        }
+    }
+
+
+
+
+
+
+
     /*
     * ###
         GET https://localhost:8443/auth/me
         Authorization: Bearer token
         User-Agent: IntelliJ HTTP Client
+        * "",
+"",
+
     * */
 
 }
