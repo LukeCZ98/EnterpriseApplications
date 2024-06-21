@@ -44,7 +44,7 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
-import com.unical.amazing.viewmodel.HomeViewModel
+import com.unical.amazing.viewmodel.home.HomeViewModel
 import coil.compose.rememberAsyncImagePainter
 import androidx.compose.ui.layout.ContentScale
 import androidx.navigation.NavController

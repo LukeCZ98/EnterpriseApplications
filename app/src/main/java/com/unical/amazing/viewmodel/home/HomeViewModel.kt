@@ -1,4 +1,4 @@
-package com.unical.amazing.viewmodel
+package com.unical.amazing.viewmodel.home
 
 import android.content.Context
 import androidx.compose.runtime.getValue

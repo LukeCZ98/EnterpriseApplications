@@ -28,6 +28,7 @@ import androidx.core.content.edit
 import androidx.navigation.NavController
 import com.unical.amazing.R
 import com.unical.amazing.viewmodel.auth.AuthViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 @Composable
@@ -84,7 +85,7 @@ fun AuthScreen(
 
     // Gestione click login
     val handleLoginClick: () -> Unit = {
-        coroutineScope.launch {
+        coroutineScope.launch(Dispatchers.IO) {
             val loginData = mapOf("username" to username, "password" to password)
             val response = auth.login(loginData)
             if (response?.get("success") == true) {
@@ -117,14 +118,16 @@ fun AuthScreen(
 
             if (password.matches(passwordRegex)) {
                 if (email.matches(emailRegex))  {
-                    coroutineScope.launch {
+                    coroutineScope.launch(Dispatchers.IO) {
                         val regData = mapOf("username" to username,"email" to email, "password" to password,"firstName" to firstName,"lastName" to lastName)
                         val response = auth.register(regData)
-                        if(response == "200"){  //CORREGERE QUESTA PARTE PER VISUALIZZARE IL MESSAGGIO DI REGISTRAZIONE E
-                                                 //NAVIGARE SULLA SCHERMATA DI LOGIN
+                        if(response == "200"){  //controllare se codice modificato funziona per gli errormessage e per redirect
                             errorMessage = "Registrazione avvenuta correttamente,\n ora verificare la mail per attivare il tuo account."
                             onRegister(username, password, email, firstName, lastName)
                             navController.navigate("login") { popUpTo("login") { inclusive = true } }
+                        }
+                        else{
+                            errorMessage = "Errore sconosciuto durante registrazione."
                         }
                     }
                 }

@@ -1,9 +1,9 @@
-package com.unical.amazing.viewmodel
+package com.unical.amazing.viewmodel.account
 
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.unical.amazing.model.Item
+import com.unical.amazing.model.account.Item
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -33,11 +33,6 @@ class AccountViewModel(context: Context) : ViewModel() {
         }
     }
 
-    fun updateUserProfilePicture(newProfilePictureUri: String) {
-        val currentUser = _user.value ?: return
-        val updatedUser = currentUser.copy(picurl = newProfilePictureUri)
-        _user.value = updatedUser
-    }
 
     fun updateUser(updatedUser: UserDto) {
         _user.value = updatedUser
@@ -80,28 +75,3 @@ class AccountViewModel(context: Context) : ViewModel() {
     }
 
 }
-
-
-/*
-prendere esempio per gestione thread nelle altre classi
-
-* class HomeViewModel : ViewModel() {
-    var productList by mutableStateOf(emptyList<ProductDto>())
-
-
-
-    fun loadProducts(context: android.content.Context) {
-        viewModelScope.launch(Dispatchers.IO){   //chiamata esterna -> usa un altro thread per chiamate in/out
-            try {
-                // Ottieni la lista dei prodotti dall'API
-                productList = ProductApi().getAll().toList()
-            } catch (e: Exception) {
-                e.printStackTrace()
-                // Gestisci gli errori di connessione o altri problemi
-                Toast.makeText(context, "Errore durante il recupero dei prodotti", Toast.LENGTH_SHORT).show()
-            }
-        }
-    }
-}
-*
-* */

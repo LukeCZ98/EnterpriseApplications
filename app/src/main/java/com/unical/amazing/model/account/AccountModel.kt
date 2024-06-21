@@ -1,6 +1,4 @@
-package com.unical.amazing.model
-
-import com.unical.amazing.model.account.WishlistModel
+package com.unical.amazing.model.account
 
 
 data class User(

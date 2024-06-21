@@ -31,7 +31,7 @@ import com.unical.amazing.view.cart.CartView
 import com.unical.amazing.view.cart.ProductDetailView
 import com.unical.amazing.view.home.HomeView
 import com.unical.amazing.view.home.SearchResultsView
-import com.unical.amazing.viewmodel.HomeViewModel
+import com.unical.amazing.viewmodel.home.HomeViewModel
 
 class MainActivity : ComponentActivity() {
     private lateinit var sharedPreferences: SharedPreferences

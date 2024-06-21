@@ -1,36 +1,28 @@
 package com.unical.amazing.view.account
 
 import android.content.Context
-import android.net.Uri
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Edit
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import coil.compose.rememberImagePainter
-import com.unical.amazing.viewmodel.UserProfileViewModelFactory
+import com.unical.amazing.viewmodel.account.UserProfileViewModelFactory
 import com.unical.amazing.viewmodel.account.UserProfileViewModel
 import io.swagger.client.models.UserDto
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 @Composable
 fun UserProfileScreen(context: Context) {
     val viewModelFactory = remember { UserProfileViewModelFactory(context) }
-    val userprofileviewModel: UserProfileViewModel = viewModel(factory = viewModelFactory)
-    val userState = userprofileviewModel.user.collectAsState()
+    val usprvwmd: UserProfileViewModel = viewModel(factory = viewModelFactory)
+    val userState = usprvwmd.user.collectAsState()
 
     userState.value?.let { user ->
         Scaffold(
@@ -52,15 +44,11 @@ fun UserProfileScreen(context: Context) {
                     .padding(horizontal = 16.dp, vertical = 8.dp)
             ) {
                 item {
-                    UserProfileHeader(user) { uri ->
-                        userprofileviewModel.updateUserProfilePicture(uri.toString())
-                    }
+                    UserProfileHeader(user)
                     Spacer(modifier = Modifier.height(16.dp))
                 }
                 item {
-                    UserProfileDetails(user) { updatedUser ->
-                        userprofileviewModel.updateUser(updatedUser)
-                    }
+                    UserProfileDetails(user)
                     Spacer(modifier = Modifier.height(16.dp))
                 }
             }
@@ -75,19 +63,12 @@ fun UserProfileScreen(context: Context) {
     }
 }
 
-@Composable
-fun UserProfileHeader(user: UserDto, onProfileImageChange: (Uri) -> Unit) {
-    var profileImageUri by remember { mutableStateOf<Uri?>(null) }
-    val imagePickerLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.GetContent(),
-        onResult = { uri: Uri? ->
-            uri?.let {
-                profileImageUri = it
-                onProfileImageChange(it)
-            }
-        }
-    )
 
+
+
+
+@Composable
+fun UserProfileHeader(user: UserDto) {
     Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
         Row(
             modifier = Modifier
@@ -95,26 +76,6 @@ fun UserProfileHeader(user: UserDto, onProfileImageChange: (Uri) -> Unit) {
                 .padding(16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Box(modifier = Modifier.size(80.dp)) {
-                Image(
-                    painter = rememberImagePainter(profileImageUri ?: user.picurl),
-                    contentDescription = "User Profile Picture",
-                    modifier = Modifier
-                        .size(80.dp)
-                        .clip(CircleShape)
-                        .background(MaterialTheme.colors.onSurface.copy(alpha = 0.2f)),
-                    contentScale = ContentScale.Crop
-                )
-                IconButton(
-                    onClick = { imagePickerLauncher.launch("image/*") },
-                    modifier = Modifier
-                        .size(24.dp)
-                        .align(Alignment.BottomEnd)
-                        .background(MaterialTheme.colors.primary, CircleShape)
-                ) {
-                    Icon(Icons.Default.Edit, contentDescription = "Edit Profile Image", tint = Color.White)
-                }
-            }
             Spacer(modifier = Modifier.width(16.dp))
             Column {
                 Text(text = user.username, style = MaterialTheme.typography.h5)
@@ -124,10 +85,39 @@ fun UserProfileHeader(user: UserDto, onProfileImageChange: (Uri) -> Unit) {
     }
 }
 
+
+
 @Composable
-fun UserProfileDetails(user: UserDto, onSave: (UserDto) -> Unit) {
+fun UserProfileDetails(user: UserDto) {
     var isEditing by remember { mutableStateOf(false) }
     var editableUser by remember { mutableStateOf(user) }
+    val coroutineScope = rememberCoroutineScope()
+    val context = LocalContext.current
+    val viewModelFactory = remember { UserProfileViewModelFactory(context) }
+    val usr: UserProfileViewModel = viewModel(factory = viewModelFactory)
+    var errorMessage by remember { mutableStateOf("") }
+
+    val handleSaveClick: () -> Unit = {
+        if (isEditing) {
+            if (isUserValid(editableUser)) {
+                coroutineScope.launch(Dispatchers.IO) {
+                    val response = usr.updateUser(editableUser)
+//                    println("Response di updateuser: $response")
+                    if(response == "200"){
+                        errorMessage = "Profilo modificato correttamente."
+                    }
+                    else{
+                        errorMessage = "Errore durante la modifica del profilo."
+                    }
+                }
+            } else {
+                errorMessage = "I dati inseriti non sono validi,ricontrollare i campi."
+            }
+        }
+        isEditing = !isEditing
+    }
+
+
 
     Card(
         shape = RoundedCornerShape(8.dp),
@@ -136,25 +126,25 @@ fun UserProfileDetails(user: UserDto, onSave: (UserDto) -> Unit) {
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             UserProfileDetailItem(
-                label = "Name",
+                label = "Nome",
                 value = editableUser.firstName,
-                isEditing = false, // Name is not editable
+                isEditing = false, // Nome non modificabile
                 onValueChange = { editableUser = editableUser.copy(firstName = it) }
             )
             Divider(color = Color.Gray, thickness = 0.5.dp, modifier = Modifier.padding(vertical = 8.dp))
 
             UserProfileDetailItem(
-                label = "Surname",
+                label = "Cognome",
                 value = editableUser.lastName,
-                isEditing = false, // Surname is not editable
+                isEditing = false, // Cognome non modificabile
                 onValueChange = { editableUser = editableUser.copy(lastName = it) }
             )
             Divider(color = Color.Gray, thickness = 0.5.dp, modifier = Modifier.padding(vertical = 8.dp))
 
             UserProfileDetailItem(
-                label = "Username",
+                label = "Nickname",
                 value = editableUser.username,
-                isEditing = false, // Surname is not editable
+                isEditing = false, // Nickname non modificabile
                 onValueChange = { editableUser = editableUser.copy(username = it) }
             )
             Divider(color = Color.Gray, thickness = 0.5.dp, modifier = Modifier.padding(vertical = 8.dp))
@@ -162,35 +152,36 @@ fun UserProfileDetails(user: UserDto, onSave: (UserDto) -> Unit) {
             UserProfileDetailItem(
                 label = "Email",
                 value = editableUser.email,
-                isEditing = false, // Email is not editable
+                isEditing = false, // Email non modificabile
                 onValueChange = { editableUser = editableUser.copy(email = it) }
             )
             Divider(color = Color.Gray, thickness = 0.5.dp, modifier = Modifier.padding(vertical = 8.dp))
 
-            UserProfileDetailItem(
-                label = "Address",
-                value = editableUser.addresses.get(0).address,
-                isEditing = isEditing,
-                onValueChange = { newAddress ->
-                    // Copia l'indirizzo corrente
-                    val updatedAddress = editableUser.addresses[0].copy(address = newAddress)
-
-                    // Aggiorna la lista degli indirizzi con l'indirizzo modificato
-                    val updatedAddresses = editableUser.addresses.toMutableList().apply {
-                        this[0] = updatedAddress
-                    }
-
-                    // Aggiorna editableUser con la nuova lista di indirizzi
-                    editableUser = editableUser.copy(addresses = updatedAddresses)
-                }
-            )
+            editableUser.addresses?.get(0)?.let {
+                UserProfileDetailItem(
+                    label = "Indirizzo",
+                    value = it.address,
+                    isEditing = isEditing,
+                    onValueChange = { newAddress ->
+                        val updatedAddress = editableUser.addresses!![0].copy(address = newAddress)
+                        val updatedAddresses = editableUser.addresses!!.toMutableList().apply {
+                            this[0] = updatedAddress
+                        }
+                        editableUser = editableUser.copy(addresses = updatedAddresses)
+                    },
+                    regex = "^[\\w\\s,.#-]{1,500}$", // Regex per validare l'indirizzo
+                    errorMessage = "Indirizzo non valido"
+                )
+            }
             Divider(color = Color.Gray, thickness = 0.5.dp, modifier = Modifier.padding(vertical = 8.dp))
 
             UserProfileDetailItem(
-                label = "Phone",
+                label = "Telefono",
                 value = editableUser.phone,
                 isEditing = isEditing,
-                onValueChange = { editableUser = editableUser.copy(phone = it) }
+                onValueChange = { editableUser = editableUser.copy(phone = it) },
+                regex = "^[0-9]{10,15}$", // Regex per validare il telefono
+                errorMessage = "Il numero di telefono deve essere tra 10 e 15 cifre."
             )
             Divider(color = Color.Gray, thickness = 0.5.dp, modifier = Modifier.padding(vertical = 8.dp))
 
@@ -198,63 +189,98 @@ fun UserProfileDetails(user: UserDto, onSave: (UserDto) -> Unit) {
                 label = "CAP",
                 value = editableUser.CAP.toString(),
                 isEditing = isEditing,
-                onValueChange = { editableUser = editableUser.copy(CAP = it.toInt()) }
+                onValueChange = { editableUser = editableUser.copy(CAP = it.toInt()) },
+                regex = "^\\d{5}$", // Regex per validare il CAP
+                errorMessage = "Il CAP deve essere di 5 cifre."
             )
             Divider(color = Color.Gray, thickness = 0.5.dp, modifier = Modifier.padding(vertical = 8.dp))
 
             UserProfileDetailItem(
-                label = "City",
+                label = "Cittá",
                 value = editableUser.city,
                 isEditing = isEditing,
-                onValueChange = { editableUser = editableUser.copy(city = it) }
+                onValueChange = { editableUser = editableUser.copy(city = it) },
+                regex = "^[a-zA-Z\\s]{1,50}$", // Regex per validare la città
+                errorMessage = "La città deve contenere solo lettere."
             )
             Divider(color = Color.Gray, thickness = 0.5.dp, modifier = Modifier.padding(vertical = 8.dp))
 
             UserProfileDetailItem(
-                label = "Country",
+                label = "Paese",
                 value = editableUser.country,
                 isEditing = isEditing,
-                onValueChange = { editableUser = editableUser.copy(country = it) }
+                onValueChange = { editableUser = editableUser.copy(country = it) },
+                regex = "^[a-zA-Z\\s]{1,50}$", // Regex per validare il paese
+                errorMessage = "Il paese deve contenere solo lettere."
             )
             Divider(color = Color.Gray, thickness = 0.5.dp, modifier = Modifier.padding(vertical = 8.dp))
 
             Spacer(modifier = Modifier.height(16.dp))
-
+            if (errorMessage.isNotEmpty()) {
+                Text(text = errorMessage, color = MaterialTheme.colors.error)
+            }
             Button(
-                onClick = {
-                    if (isEditing) {
-                        onSave(editableUser)
-                    }
-                    isEditing = !isEditing
-                },
+                onClick = handleSaveClick, // Utilizza la funzione separata
                 modifier = Modifier.align(Alignment.End)
             ) {
-                Text(if (isEditing) "Save" else "Edit")
+                Text(if (isEditing) "Salva" else "Modifica")
             }
         }
     }
 }
+
+
+
 
 @Composable
 fun UserProfileDetailItem(
     label: String,
     value: String,
     isEditing: Boolean,
-    onValueChange: (String) -> Unit
+    onValueChange: (String) -> Unit,
+    regex: String? = null,
+    errorMessage: String = ""
 ) {
+    var isValid by remember { mutableStateOf(true) }
+
     Column(modifier = Modifier.fillMaxWidth()) {
         Text(text = label, style = MaterialTheme.typography.caption, color = Color.Gray)
-        if (isEditing && label !in listOf("Name", "Surname", "Email")) {
+        if (isEditing) {
             TextField(
                 value = value,
-                onValueChange = onValueChange,
+                onValueChange = {
+                    if (regex != null && !it.matches(regex.toRegex())) {
+                        isValid = false
+                    } else {
+                        isValid = true
+                    }
+                    onValueChange(it)
+                },
                 singleLine = true,
+                isError = !isValid,
                 modifier = Modifier.fillMaxWidth()
             )
+            if (!isValid) {
+                Text(text = errorMessage, color = Color.Red, style = MaterialTheme.typography.caption)
+            }
         } else {
             Text(text = value, style = MaterialTheme.typography.body1, modifier = Modifier.padding(top = 4.dp))
         }
     }
 }
+
+
+
+
+
+fun isUserValid(user: UserDto): Boolean {
+    return user.firstName.isNotBlank() && user.lastName.isNotBlank() &&
+            user.username.isNotBlank() && user.email.isNotBlank() &&
+            user.phone.matches("^[0-9]{10,15}$".toRegex()) &&
+            user.CAP.toString().matches("^\\d{5}$".toRegex()) &&
+            user.city.matches("^[a-zA-Z\\s]{1,50}$".toRegex()) &&
+            user.country.matches("^[a-zA-Z\\s]{1,50}$".toRegex())
+}
+
 
 

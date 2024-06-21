@@ -11,24 +11,23 @@
  */
 package io.swagger.client.models
 
-import com.unical.amazing.model.Order
+import com.unical.amazing.model.account.Order
 import com.unical.amazing.model.account.WishlistModel
 import com.unical.amazing.swagger.models.AddressDto
 
 
-data class UserDto (
+data class UserDto(
 
     val id: String,
     val username: String,
     val firstName: String,
     val lastName: String,
     val email: String,
-    val addresses: List<AddressDto>,
-    val phone: String = addresses.get(0).phone,
-    val CAP: Int= addresses.get(0).cap,
-    val city: String= addresses.get(0).city,
-    val country: String= addresses.get(0).country,
-    val picurl: String? = null,
+    val addresses: List<AddressDto>? = null,
+    val phone: String = addresses?.get(0)?.phone.toString(),
+    val CAP: Int = addresses?.get(0)?.cap!!,
+    val city: String= addresses?.get(0)?.city.toString(),
+    val country: String= addresses?.get(0)?.country.toString(),
     val orders: List<Order>? = null,
     val wishlistModels: List<WishlistModel>? = null
 )

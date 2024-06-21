@@ -1,9 +1,8 @@
-package com.unical.amazing.viewmodel
+package com.unical.amazing.viewmodel.account
 
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.unical.amazing.viewmodel.account.UserProfileViewModel
 
 class UserProfileViewModelFactory(private val context: Context) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -14,10 +13,3 @@ class UserProfileViewModelFactory(private val context: Context) : ViewModelProvi
         throw IllegalArgumentException("Unknown ViewModel class")
     }
 }
-
-/*
-*
-* "",
-
-*
-* */

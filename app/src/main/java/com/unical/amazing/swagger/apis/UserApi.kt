@@ -13,14 +13,29 @@ package io.swagger.client.apis
 
 import android.content.Context
 import com.unical.amazing.R
+import com.unical.amazing.model.settings.HOST_URL
+import com.unical.amazing.swagger.models.UserUpdDto
 import io.swagger.client.models.NewUserDto
 import io.swagger.client.models.UserDto
-
 import io.swagger.client.infrastructure.*
+import okhttp3.*
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
+import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import java.io.FileInputStream
+import java.io.IOException
+import java.security.KeyStore
+import javax.net.ssl.SSLContext
+import javax.net.ssl.TrustManagerFactory
+import javax.net.ssl.X509TrustManager
+
 
 class UserApi(context: Context, // Aggiungi il Context come parametro
-              basePath: String = "https://192.168.1.160:8443/"
+              basePath: String = "https://$HOST_URL:8443/"
 ) : ApiClient(basePath, createSecureClient(context, R.raw.truststore,"progettoea")) {
+
+    private val Context = context
 
     /**
      * 
@@ -75,7 +90,7 @@ class UserApi(context: Context, // Aggiungi il Context come parametro
 
 
 
-
+//UTILIZZATO PER AREA PERSONALE UTENTE
     @Suppress("UNCHECKED_CAST")
     fun account(token: String): UserDto {
         val headers = mapOf("Authorization" to "Bearer $token")
@@ -100,15 +115,67 @@ class UserApi(context: Context, // Aggiungi il Context come parametro
 
 
 
+    fun update(token: String, body: UserUpdDto): Int {
+        val gson = Gson()
+
+        // Converti il corpo in JSON
+        val jsonBody = gson.toJson(body)
+        val requestBody = RequestBody.create("application/json".toMediaType(), jsonBody)
+
+        // Carica il tuo truststore (assumi che il percorso sia configurato correttamente)
+        val client = createHttpClientWithTrustStore(Context,"progettoea")
+
+        // Costruisci la richiesta
+        val request = Request.Builder()
+            .url("https://$HOST_URL:8443/auth/update")  // Usa HTTPS
+            .post(requestBody)
+            .addHeader("Authorization", "Bearer $token")
+            .build()
+
+        try {
+            // Esegui la richiesta
+            client.newCall(request).execute().use { response ->
+                return when (response.code) {
+                    200 -> 200
+                    in 100..199 -> throw IOException("Informational response code: ${response.code}")
+                    in 300..399 -> throw IOException("Redirection response code: ${response.code}")
+                    in 400..499 -> throw ClientException(response.body?.string() ?: "Client error")
+                    in 500..599 -> throw ServerException(response.message ?: "Server error")
+                    else -> throw IOException("Unexpected response code: ${response.code}")
+                }
+            }
+        } catch (e: IOException) {
+            throw e
+        }
+    }
 
 
 
-    /*
-    * ###
-        GET https://localhost:8443/auth/me
-        Authorization: Bearer token
-        User-Agent: IntelliJ HTTP Client
 
-    * */
+    private fun createHttpClientWithTrustStore(context: Context, trustStorePassword: String): OkHttpClient {
+        val trustStore = KeyStore.getInstance("BKS")
+
+        // Usa Resources.openRawResource() per ottenere l'InputStream
+        context.resources.openRawResource(R.raw.truststore).use { inputStream ->
+            trustStore.load(inputStream, trustStorePassword.toCharArray())
+        }
+
+        val trustManagerFactory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm())
+        trustManagerFactory.init(trustStore)
+        val trustManagers = trustManagerFactory.trustManagers
+
+        val sslContext = SSLContext.getInstance("TLS")
+        sslContext.init(null, trustManagers, null)
+
+        val trustManager = trustManagers[0] as X509TrustManager
+
+        return OkHttpClient.Builder()
+            .sslSocketFactory(sslContext.socketFactory, trustManager)
+            .hostnameVerifier { _, _ -> true }
+            .build()
+    }
+
+
+
 
 }

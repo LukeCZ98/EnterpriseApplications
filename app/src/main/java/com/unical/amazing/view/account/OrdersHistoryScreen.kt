@@ -12,8 +12,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.unical.amazing.model.Order
-import com.unical.amazing.viewmodel.AccountViewModel
+import com.unical.amazing.model.account.Order
+import com.unical.amazing.viewmodel.account.AccountViewModel
 
 @Composable
 fun OrdersHistoryScreen(accountViewModel: AccountViewModel = viewModel()) {

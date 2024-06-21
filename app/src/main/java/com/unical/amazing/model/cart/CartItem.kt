@@ -1,4 +1,4 @@
-package com.unical.amazing.model
+package com.unical.amazing.model.cart
 
 data class CartItem(
     val name: String,
