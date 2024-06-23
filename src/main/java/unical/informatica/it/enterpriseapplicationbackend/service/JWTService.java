@@ -7,6 +7,7 @@ import unical.informatica.it.enterpriseapplicationbackend.model.LocalUser;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import unical.informatica.it.enterpriseapplicationbackend.model.Role;
 
 import java.util.Date;
 
@@ -31,7 +32,7 @@ public class JWTService {
   private static final String USERNAME_KEY = "USERNAME";
   private static final String VERIFICATION_EMAIL_KEY = "VERIFICATION_EMAIL";
   private static final String RESET_PASSWORD_EMAIL_KEY = "RESET_PASSWORD_EMAIL";
-
+  private static final String ROLES_KEY = "ROLES";
   /**
    * Post construction method.
    */
@@ -48,6 +49,7 @@ public class JWTService {
   public String generateJWT(LocalUser user) {
     return JWT.create()
         .withClaim(USERNAME_KEY, user.getUsername())
+        .withClaim(ROLES_KEY, user.getRole().toString())
         .withExpiresAt(new Date(System.currentTimeMillis() + (1000 * expiryInSeconds)))
         .withIssuer(issuer)
         .sign(algorithm);
@@ -99,4 +101,19 @@ public class JWTService {
     return jwt.getClaim(USERNAME_KEY).asString();
   }
 
+
+  public JWTService(@Value("${jwt.secret}") String secret, @Value("${jwt.issuer}") String issuer) {
+    this.algorithm = Algorithm.HMAC256(secret);
+    this.issuer = issuer;
+  }
+
+  /**
+   * Gets the roles out of a given JWT.
+   * @param token The JWT to decode.
+   * @return The roles stored inside.
+   */
+  public String getRole(String token) {
+    DecodedJWT jwt = JWT.require(algorithm).withIssuer(issuer).build().verify(token);
+    return jwt.getClaim(ROLES_KEY).asString();
+  }
 }

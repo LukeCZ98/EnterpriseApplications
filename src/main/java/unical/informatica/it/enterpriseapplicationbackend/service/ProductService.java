@@ -5,6 +5,7 @@ import unical.informatica.it.enterpriseapplicationbackend.model.dao.ProductDAO;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Service for handling product actions.
@@ -21,6 +22,21 @@ public class ProductService {
    */
   public ProductService(ProductDAO productDAO) {
     this.productDAO = productDAO;
+  }
+
+/*
+  public void updateProduct(Product product) {
+    productDAO.updateTitleAndDescriptionAndImg_urlAndPriceAndAvailableAndInventoryByTitle(product.getTitle())
+  }*/
+
+
+
+  //TODO: TEST THIS METHOD
+  public void updateProductTitle(String oldTitle, String title){
+    Optional<Product> product = productDAO.findByTitle(oldTitle);
+    if(product.isPresent()){
+      product.get().setTitle(title);
+    }
   }
 
   /**

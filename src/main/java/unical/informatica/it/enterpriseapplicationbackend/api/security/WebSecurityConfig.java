@@ -3,8 +3,11 @@ package unical.informatica.it.enterpriseapplicationbackend.api.security;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.intercept.AuthorizationFilter;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 /**
  * Configuration of the security on endpoints.
@@ -20,6 +23,7 @@ public class WebSecurityConfig {
 
   /**
    * Filter chain to configure security.
+   *
    * @param http The security object.
    * @return The chain built.
    * @throws Exception Thrown on error configuring.
@@ -30,16 +34,34 @@ public class WebSecurityConfig {
     // We need to make sure our authentication filter is run before the http request filter is run.
     http.addFilterBefore(jwtRequestFilter, AuthorizationFilter.class);
     http.authorizeHttpRequests()
-        // Specific exclusions or rules.
-        .requestMatchers("/product/all","/product/find/**", "/auth/register", "/auth/login",
-            "/auth/verify", "/auth/forgot", "/auth/reset", "/error",
-            "/websocket", "/websocket/**").permitAll()
-        // Everything else should be authenticated.
-        .anyRequest().authenticated();
+            // Specific exclusions or rules.
+            .requestMatchers("/product/all", "/product/find/**", "/auth/register", "/auth/login",
+                    "/auth/verify", "/auth/forgot", "/auth/reset", "/error",
+                    "/websocket", "/websocket/**", "product/edit", "{productId}").permitAll()
+            // Everything else should be authenticated.
+            .anyRequest().authenticated();
     http.requiresChannel()
             .anyRequest()
             .requiresSecure();
     return http.build();
   }
+/*
+  protected void configure(HttpSecurity http) throws Exception {
+    http.csrf().disable()
+            .authorizeRequests(authorizeRequests ->
+                    authorizeRequests
+                            .requestMatchers("/api/auth/login/admin").permitAll()
+                            .requestMatchers("/api/auth/login/user").permitAll()
+                            .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                            .anyRequest().authenticated()
+            )
+            .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
+  }
+*/
 
+  @Bean
+  public PasswordEncoder passwordEncoder() {
+    return new BCryptPasswordEncoder();
+  }
 }
+

@@ -20,8 +20,10 @@ public class Address {
   private Long id;
   /** The first line of address. */
   @Column(name = "address_line_1", nullable = false, length = 512)
-  private String addressLine1;
+  private String address;
+
   /** The second line of address. */
+  @JsonIgnore
   @Column(name = "address_line_2", length = 512)
   private String addressLine2;
   /** The city of the address. */
@@ -30,6 +32,13 @@ public class Address {
   /** The country of the address. */
   @Column(name = "country", nullable = false, length = 75)
   private String country;
+
+  @Column(name = "phone", nullable = false, length = 12)
+  private String phone;
+
+  @Column(name = "CAP", nullable = false, length = 5)
+  private Integer CAP;
+
   /** The user the address is associated with. */
   @JsonIgnore
   @ManyToOne(optional = false)
@@ -104,16 +113,16 @@ public class Address {
    * Gets the Address Line 1.
    * @return The first line of the address.
    */
-  public String getAddressLine1() {
-    return addressLine1;
+  public String getAddress() {
+    return address;
   }
 
   /**
    * Sets the first line of address.
-   * @param addressLine1 The first line of address.
+   * @param address The first line of address.
    */
-  public void setAddressLine1(String addressLine1) {
-    this.addressLine1 = addressLine1;
+  public void setAddress(String address) {
+    this.address = address;
   }
 
   /**
@@ -132,4 +141,20 @@ public class Address {
     this.id = id;
   }
 
+
+  public String getPhone() {
+    return phone;
+  }
+
+  public void setPhone(String phone) {
+    this.phone = phone;
+  }
+
+  public Integer getCAP() {
+    return CAP;
+  }
+
+  public void setCAP(Integer CAP) {
+    this.CAP = CAP;
+  }
 }

@@ -32,7 +32,7 @@ import java.util.Map;
 @EnableWebSocket
 @EnableWebSocketMessageBroker
 public class WebsocketConfiguration
-    implements WebSocketMessageBrokerConfigurer {
+        implements WebSocketMessageBrokerConfigurer {
 
   /** The Application Context. */
   private ApplicationContext context;
@@ -81,10 +81,10 @@ public class WebsocketConfiguration
    */
   private AuthorizationManager<Message<?>> makeMessageAuthorizationManager() {
     MessageMatcherDelegatingAuthorizationManager.Builder messages =
-        new MessageMatcherDelegatingAuthorizationManager.Builder();
+            new MessageMatcherDelegatingAuthorizationManager.Builder();
     messages.
-        simpDestMatchers("/topic/user/**").authenticated()
-        .anyMessage().permitAll();
+            simpDestMatchers("/topic/user/**").authenticated()
+            .anyMessage().permitAll();
     return messages.build();
   }
 
@@ -94,26 +94,26 @@ public class WebsocketConfiguration
   @Override
   public void configureClientInboundChannel(ChannelRegistration registration) {
     AuthorizationManager<Message<?>> authorizationManager =
-        makeMessageAuthorizationManager();
+            makeMessageAuthorizationManager();
     AuthorizationChannelInterceptor authInterceptor =
-        new AuthorizationChannelInterceptor(authorizationManager);
+            new AuthorizationChannelInterceptor(authorizationManager);
     AuthorizationEventPublisher publisher =
-        new SpringAuthorizationEventPublisher(context);
+            new SpringAuthorizationEventPublisher(context);
     authInterceptor.setAuthorizationEventPublisher(publisher);
     registration.interceptors(jwtRequestFilter, authInterceptor,
-        new RejectClientMessagesOnChannelsChannelInterceptor(),
-        new DestinationLevelAuthorizationChannelInterceptor());
+            new RejectClientMessagesOnChannelsChannelInterceptor(),
+            new DestinationLevelAuthorizationChannelInterceptor());
   }
 
   /**
    * Interceptor for rejecting client messages on specific channels.
    */
   private class RejectClientMessagesOnChannelsChannelInterceptor
-      implements ChannelInterceptor {
+          implements ChannelInterceptor {
 
     /** Paths that do not allow client messages. */
     private String[] paths = new String[] {
-        "/topic/user/*/address"
+            "/topic/user/*/address"
     };
 
     /**
@@ -123,7 +123,7 @@ public class WebsocketConfiguration
     public Message<?> preSend(Message<?> message, MessageChannel channel) {
       if (message.getHeaders().get("simpMessageType").equals(SimpMessageType.MESSAGE)) {
         String destination = (String) message.getHeaders().get(
-            "simpDestination");
+                "simpDestination");
         for (String path: paths) {
           if (MATCHER.match(path, destination))
             message = null;
@@ -139,7 +139,7 @@ public class WebsocketConfiguration
    * channels and path variables.
    */
   private class DestinationLevelAuthorizationChannelInterceptor
-      implements ChannelInterceptor {
+          implements ChannelInterceptor {
 
     /**
      * {@inheritDoc}
@@ -148,15 +148,15 @@ public class WebsocketConfiguration
     public Message<?> preSend(Message<?> message, MessageChannel channel) {
       if (message.getHeaders().get("simpMessageType").equals(SimpMessageType.SUBSCRIBE)) {
         String destination = (String) message.getHeaders().get(
-            "simpDestination");
+                "simpDestination");
         String userTopicMatcher = "/topic/user/{userId}/**";
         if (MATCHER.match(userTopicMatcher, destination)) {
           Map<String, String> params = MATCHER.extractUriTemplateVariables(
-              userTopicMatcher, destination);
+                  userTopicMatcher, destination);
           try {
             Long userId = Long.valueOf(params.get("userId"));
             Authentication authentication =
-                SecurityContextHolder.getContext().getAuthentication();
+                    SecurityContextHolder.getContext().getAuthentication();
             if (authentication != null) {
               LocalUser user = (LocalUser) authentication.getPrincipal();
               if (!userService.userHasPermissionToUser(user, userId)) {

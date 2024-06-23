@@ -54,6 +54,10 @@ public class LocalUser implements UserDetails {
   @Column(name = "email_verified", nullable = false)
   private Boolean emailVerified = false;
 
+
+  @Column (name = "role", nullable = false)
+  private Role role;
+
   /**
    * Is the email verified?
    * @return True if it is, false otherwise.
@@ -237,5 +241,18 @@ public class LocalUser implements UserDetails {
   public void setId(Long id) {
     this.id = id;
   }
-
+  /**
+   * Gets the role.
+   * @return The role.
+   */
+  public Role getRole() {
+    return role;
+  }
+  /**
+   * Sets the role.
+   * @param role The id.
+   */
+  public void setRole(Role role) {
+    this.role = role;
+  }
 }

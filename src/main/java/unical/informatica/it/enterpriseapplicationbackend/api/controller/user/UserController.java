@@ -1,5 +1,6 @@
 package unical.informatica.it.enterpriseapplicationbackend.api.controller.user;
 
+import jakarta.validation.Valid;
 import unical.informatica.it.enterpriseapplicationbackend.api.model.DataChange;
 import unical.informatica.it.enterpriseapplicationbackend.model.Address;
 import unical.informatica.it.enterpriseapplicationbackend.model.LocalUser;

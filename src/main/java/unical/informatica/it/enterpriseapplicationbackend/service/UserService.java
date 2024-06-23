@@ -3,12 +3,16 @@ package unical.informatica.it.enterpriseapplicationbackend.service;
 import unical.informatica.it.enterpriseapplicationbackend.api.model.LoginBody;
 import unical.informatica.it.enterpriseapplicationbackend.api.model.PasswordResetBody;
 import unical.informatica.it.enterpriseapplicationbackend.api.model.RegistrationBody;
+import unical.informatica.it.enterpriseapplicationbackend.api.model.UserUpdateBody;
 import unical.informatica.it.enterpriseapplicationbackend.exception.EmailFailureException;
 import unical.informatica.it.enterpriseapplicationbackend.exception.EmailNotFoundException;
 import unical.informatica.it.enterpriseapplicationbackend.exception.UserAlreadyExistsException;
 import unical.informatica.it.enterpriseapplicationbackend.exception.UserNotVerifiedException;
+import unical.informatica.it.enterpriseapplicationbackend.model.Address;
 import unical.informatica.it.enterpriseapplicationbackend.model.LocalUser;
+import unical.informatica.it.enterpriseapplicationbackend.model.Role;
 import unical.informatica.it.enterpriseapplicationbackend.model.VerificationToken;
+import unical.informatica.it.enterpriseapplicationbackend.model.dao.AddressDAO;
 import unical.informatica.it.enterpriseapplicationbackend.model.dao.LocalUserDAO;
 import unical.informatica.it.enterpriseapplicationbackend.model.dao.VerificationTokenDAO;
 import jakarta.transaction.Transactional;
@@ -35,6 +39,8 @@ public class UserService {
   /** The email service. */
   private EmailService emailService;
 
+  private AddressService addressService;
+
   /**
    * Constructor injected by spring.
    *
@@ -45,12 +51,13 @@ public class UserService {
    * @param emailService
    */
   public UserService(LocalUserDAO localUserDAO, VerificationTokenDAO verificationTokenDAO, EncryptionService encryptionService,
-                     JWTService jwtService, EmailService emailService) {
+                     JWTService jwtService, EmailService emailService, AddressService addressService) {
     this.localUserDAO = localUserDAO;
     this.verificationTokenDAO = verificationTokenDAO;
     this.encryptionService = encryptionService;
     this.jwtService = jwtService;
     this.emailService = emailService;
+      this.addressService = addressService;
   }
 
   /**
@@ -61,7 +68,7 @@ public class UserService {
    */
   public LocalUser registerUser(RegistrationBody registrationBody) throws UserAlreadyExistsException, EmailFailureException {
     if (localUserDAO.findByEmailIgnoreCase(registrationBody.getEmail()).isPresent()
-        || localUserDAO.findByUsernameIgnoreCase(registrationBody.getUsername()).isPresent()) {
+            || localUserDAO.findByUsernameIgnoreCase(registrationBody.getUsername()).isPresent()) {
       throw new UserAlreadyExistsException();
     }
     LocalUser user = new LocalUser();
@@ -70,6 +77,7 @@ public class UserService {
     user.setFirstName(registrationBody.getFirstName());
     user.setLastName(registrationBody.getLastName());
     user.setPassword(encryptionService.encryptPassword(registrationBody.getPassword()));
+    user.setRole(Role.USER);
     VerificationToken verificationToken = createVerificationToken(user);
     emailService.sendVerificationEmail(verificationToken);
     return localUserDAO.save(user);
@@ -104,7 +112,7 @@ public class UserService {
         } else {
           List<VerificationToken> verificationTokens = user.getVerificationTokens();
           boolean resend = verificationTokens.size() == 0 ||
-              verificationTokens.get(0).getCreatedTimestamp().before(new Timestamp(System.currentTimeMillis() - (60 * 60 * 1000)));
+                  verificationTokens.get(0).getCreatedTimestamp().before(new Timestamp(System.currentTimeMillis() - (60 * 60 * 1000)));
           if (resend) {
             VerificationToken verificationToken = createVerificationToken(user);
             verificationTokenDAO.save(verificationToken);
@@ -177,6 +185,25 @@ public class UserService {
    */
   public boolean userHasPermissionToUser(LocalUser user, Long id) {
     return user.getId() == id;
+  }
+
+
+  /**
+   * Updates the profile of the authenticated user.
+   *
+   * @param currentUser    The currently authenticated user.
+   * @param userUpdateBody The new user information.
+   * @return
+   */
+  @Transactional
+  public void updateUserProfile(LocalUser currentUser, UserUpdateBody userUpdateBody) {
+    Address address = currentUser.getAddresses().get(0);
+    address.setPhone(userUpdateBody.getPhone());
+    address.setAddress(userUpdateBody.getAddress());
+    address.setCity(userUpdateBody.getCity());
+    address.setCountry(userUpdateBody.getCountry());
+    address.setCAP(userUpdateBody.getCap());
+    addressService.saveAddress(address);
   }
 
 }
