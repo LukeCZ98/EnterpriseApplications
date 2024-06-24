@@ -12,17 +12,16 @@
 package com.unical.amazing.swagger.models
 
 /**
- * 
- * @param totalPrice 
- * @param paymentMethod 
- * @param userId 
- * @param productDtoList 
+ *
+ * @param totalPrice
+ * @param paymentMethod
+ * @param userId
+ * @param productDtoList
  */
-data class OrderDto (
-
-    val totalPrice: kotlin.Float? = null,
-    val paymentMethod: kotlin.String? = null,
-    val userId: kotlin.Long? = null,
-    val productDtoList: kotlin.Array<ProductDto>? = null
-) {
+data class OrderDto(
+    val id: Int,
+    val product: List<ProductDto>,
+    val quantity: Int
+)
+{
 }

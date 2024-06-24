@@ -31,7 +31,7 @@ fun AccountView(onLogout: () -> Unit) {
                 UserProfileScreen(context)
             }
             composable("orders") {
-                OrdersHistoryScreen()
+                OrdersHistoryScreen(context)
             }
             composable("wishlist") {
                 WishlistScreen()

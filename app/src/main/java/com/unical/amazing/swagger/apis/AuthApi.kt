@@ -2,6 +2,7 @@ package com.unical.amazing.swagger.apis
 
 import android.content.Context
 import com.unical.amazing.R
+import com.unical.amazing.model.settings.HOST_URL
 import io.swagger.client.infrastructure.ApiClient
 import io.swagger.client.infrastructure.ClientError
 import io.swagger.client.infrastructure.ClientException
@@ -14,7 +15,7 @@ import io.swagger.client.infrastructure.Success
 import io.swagger.client.infrastructure.createSecureClient
 
 class AuthApi(context: Context, // Aggiungi il Context come parametro
-              basePath: String = "https://192.168.1.160:8443/"
+              basePath: String = "https://$HOST_URL:8443/"
              ) : ApiClient(basePath, createSecureClient(context, R.raw.truststore,"progettoea")) {
 
     /**

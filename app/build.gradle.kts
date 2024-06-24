@@ -101,6 +101,7 @@ dependencies {
     // Kotlinx serialization
     implementation(libs.kotlinx.serialization.json)
     implementation (libs.androidx.lifecycle.viewmodel.ktx)
+    implementation("com.jakewharton.timber:timber:4.7.1")
 
     implementation(libs.okhttp.v493)
     implementation(libs.kotlinx.serialization.json.v132)

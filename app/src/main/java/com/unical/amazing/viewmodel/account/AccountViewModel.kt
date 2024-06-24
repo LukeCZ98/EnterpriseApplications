@@ -34,11 +34,6 @@ class AccountViewModel(context: Context) : ViewModel() {
     }
 
 
-    fun updateUser(updatedUser: UserDto) {
-        _user.value = updatedUser
-        // Qui aggiungere la logica per salvare l'utente aggiornato nel database
-    }
-
 
 
     fun createWishlist() {

@@ -50,6 +50,18 @@ class MainActivity : ComponentActivity() {
             val viewmodel = remember { HomeViewModel(context) }
             val isLoggedIn = rememberSaveable { mutableStateOf(checkLoginStatus()) }
 
+
+            /*
+            * mettiamo if controllo admin user sui ruoli restituiti dal server
+            * insieme al token e verifichiamo se mandare o utente su navhost utente
+            * oppure admin su navhost admin nuovo navhost admin da creare e collegare
+            * con gerarchia ecc
+            * per controllare se admin impostare un valore stato cosi che quando cambia viene effettuata
+            * la scelta navhost
+            * */
+
+
+
             AmazingTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),

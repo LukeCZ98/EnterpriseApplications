@@ -11,11 +11,17 @@
  */
 package io.swagger.client.apis
 
+import android.content.Context
+import com.unical.amazing.R
+import com.unical.amazing.model.settings.HOST_URL
 import com.unical.amazing.swagger.models.OrderDto
 
 import io.swagger.client.infrastructure.*
 
-class OrderApi(basePath: kotlin.String = "http://localhost:8010/") : ApiClient(basePath) {
+class OrderApi(context: Context, // Aggiungi il Context come parametro
+               basePath: String = "https://$HOST_URL:8443/"
+              ) : ApiClient(basePath, createSecureClient(context, R.raw.truststore,"progettoea")) {
+
 
     /**
      * 
@@ -49,17 +55,19 @@ class OrderApi(basePath: kotlin.String = "http://localhost:8010/") : ApiClient(b
      * @return kotlin.Array<OrderDto>
      */
     @Suppress("UNCHECKED_CAST")
-    fun getAllByUser(userId: kotlin.Long): kotlin.Array<OrderDto> {
+    fun getAllByUser(token: String): Map<String, Any?> {
+        val headers = mapOf("Authorization" to "Bearer $token")
         val localVariableConfig = RequestConfig(
                 RequestMethod.GET,
-                "/v1/orders/{userId}".replace("{" + "userId" + "}", "$userId")
+                "/orders",
+                headers = headers
         )
         val response = request<kotlin.Array<OrderDto>>(
                 localVariableConfig
         )
 
         return when (response.responseType) {
-            ResponseType.Success -> (response as Success<*>).data as kotlin.Array<OrderDto>
+            ResponseType.Success -> (response as Success<*>).data as Map<String, Any?>
             ResponseType.Informational -> TODO()
             ResponseType.Redirection -> TODO()
             ResponseType.ClientError -> throw ClientException((response as ClientError<*>).body as? String ?: "Client error")

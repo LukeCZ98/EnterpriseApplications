@@ -24,10 +24,9 @@ package com.unical.amazing.swagger.models
 data class ProductDto (
     val id: kotlin.Long? = null,
     val title: kotlin.String? = null,
-    val price: kotlin.Double? = null,
+    val price: kotlin.Double,
     val description: kotlin.String? = null,
     val available: kotlin.Boolean? = null,
-    val userId: kotlin.Long? = null,
     val img_url: kotlin.String? = null
 ) {
 }
