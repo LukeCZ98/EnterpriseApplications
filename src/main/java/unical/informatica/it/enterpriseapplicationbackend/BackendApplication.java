@@ -9,5 +9,5 @@ public class BackendApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(BackendApplication.class, args);
 	}
-
+    //INCLUDERE NELLA RESPONSE DEL LOGIN ANCHE IL ROLE DI ADMIN
 }

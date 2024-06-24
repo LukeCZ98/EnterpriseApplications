@@ -14,7 +14,7 @@ import java.util.List;
  * Controller to handle requests to create, update and view orders.
  */
 @RestController
-@RequestMapping("/order")
+@RequestMapping("/orders")
 public class OrderController {
 
   /** The Order Service. */
