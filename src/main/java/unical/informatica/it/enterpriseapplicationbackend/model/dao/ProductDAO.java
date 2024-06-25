@@ -1,15 +1,12 @@
 package unical.informatica.it.enterpriseapplicationbackend.model.dao;
 
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.repository.ListCrudRepository;
-import org.springframework.transaction.annotation.Transactional;
-import unical.informatica.it.enterpriseapplicationbackend.model.Inventory;
 import unical.informatica.it.enterpriseapplicationbackend.model.Product;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 import java.util.Optional;
+
 
 /**
  * Data Access Object for accessing Product data.
@@ -20,8 +17,6 @@ public interface ProductDAO extends ListCrudRepository<Product, Long> {
     @Query("select p from Product p where p.title ilike '%1%'")
     List<Product> findByTitleLike(String title);
 
-    Optional<Product> findByTitle(String title);
-
-
-
+    @Query("select p from Product p where p.id = ?1")
+    Optional<Product> find(Long id);
 }

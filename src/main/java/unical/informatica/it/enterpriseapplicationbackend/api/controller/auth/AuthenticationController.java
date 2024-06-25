@@ -81,7 +81,6 @@ public class AuthenticationController {
       return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
     } else {
       LoginResponse response = new LoginResponse();
-      Role role = Role.valueOf(jwtService.getRole(jwt));
       response.setJwt(jwt);
       response.setSuccess(true);
       return ResponseEntity.ok(response);

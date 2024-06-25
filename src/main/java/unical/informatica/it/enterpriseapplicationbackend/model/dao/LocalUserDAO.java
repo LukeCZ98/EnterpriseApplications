@@ -17,7 +17,6 @@ public interface LocalUserDAO extends ListCrudRepository<LocalUser, Long> {
 
   Optional<LocalUser> findByEmailIgnoreCase(String email);
 
-  List<LocalUser> findByRole(Role role);
 
 
 }

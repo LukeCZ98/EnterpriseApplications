@@ -89,5 +89,26 @@ public class ProductController {
 
 
 
+//metodo funzionante inserire verifica utente
+@PostMapping("/update")
+public ResponseEntity<String> updateProduct(@Valid @RequestBody Product product) {
+
+        if(productService.updateProduct(product))
+          return ResponseEntity.ok().build();
+        else{
+          return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("errore");
+        }
+
+}
+
+
+  @PostMapping("/add")
+  public Product addProduct(@Valid @RequestBody Product product) {
+
+    return productDAO.save(product);
+
+  }
+
+
 
 }

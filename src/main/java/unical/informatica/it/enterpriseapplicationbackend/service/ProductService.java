@@ -1,5 +1,7 @@
 package unical.informatica.it.enterpriseapplicationbackend.service;
 
+import jakarta.transaction.Transactional;
+import unical.informatica.it.enterpriseapplicationbackend.api.model.ProductBody;
 import unical.informatica.it.enterpriseapplicationbackend.model.Product;
 import unical.informatica.it.enterpriseapplicationbackend.model.dao.ProductDAO;
 import org.springframework.stereotype.Service;
@@ -24,20 +26,37 @@ public class ProductService {
     this.productDAO = productDAO;
   }
 
-/*
-  public void updateProduct(Product product) {
-    productDAO.updateTitleAndDescriptionAndImg_urlAndPriceAndAvailableAndInventoryByTitle(product.getTitle())
-  }*/
+  //da mettere i dati che l'admin dovrebbe modificare
+  public Boolean updateProduct(Product product) {
+    Optional<Product> prod = productDAO.find(product.getId());
+    if (prod.isPresent()) {
+      Product prd = prod.get();
+      prd.setDescription(product.getDescription());
+      prd.setTitle(product.getTitle());
+      prd.setPrice(product.getPrice());
+      prd.setAvailable(product.getAvailable());
+      productDAO.save(prd);
+      return true;
+    }
+    return false;
+  }
 
-
-
-  //TODO: TEST THIS METHOD
-  public void updateProductTitle(String oldTitle, String title){
-    Optional<Product> product = productDAO.findByTitle(oldTitle);
-    if(product.isPresent()){
-      product.get().setTitle(title);
+  //elimina prodotto
+  public void deleteProduct(Product product) {
+    Optional<Product> prod = productDAO.find(product.getId());
+    if (prod.isPresent()) {
+      productDAO.delete(prod.get());
     }
   }
+
+
+  public void addProduct(Product product) {
+    productDAO.save(product);
+  }
+
+
+
+
 
   /**
    * Gets the all products available.

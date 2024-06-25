@@ -1,5 +1,6 @@
 package unical.informatica.it.enterpriseapplicationbackend.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 /**
@@ -32,6 +33,7 @@ public class Product {
 
 
   /** The inventory of the product. */
+  @JsonIgnore
   @OneToOne(mappedBy = "product", cascade = CascadeType.REMOVE, optional = false, orphanRemoval = true)
   private Inventory inventory;
 

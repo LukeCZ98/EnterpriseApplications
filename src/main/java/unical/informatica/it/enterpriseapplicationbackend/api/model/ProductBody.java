@@ -8,20 +8,17 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 public class ProductBody {
-    @Id
+
     private Long id;
+
     private String title;
-    @JsonIgnore
-    @Nullable
+
     private String description;
-    @JsonIgnore
-    @Nullable
+
     private String img_url;
-    @JsonIgnore
-    @Nullable
+
     private Double price;
-    @JsonIgnore
-    @Nullable
+
     private Boolean available;
 
 

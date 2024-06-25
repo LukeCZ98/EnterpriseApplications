@@ -56,7 +56,7 @@ public class LocalUser implements UserDetails {
 
 
   @Column (name = "role", nullable = false)
-  private Role role;
+  private Boolean role;
 
   /**
    * Is the email verified?
@@ -242,17 +242,17 @@ public class LocalUser implements UserDetails {
     this.id = id;
   }
   /**
-   * Gets the role.
+   * Gets the role.    Se role é true allora sará admin altrimenti utente normale
    * @return The role.
    */
-  public Role getRole() {
+  public Boolean getRole() {
     return role;
   }
   /**
    * Sets the role.
    * @param role The id.
    */
-  public void setRole(Role role) {
+  public void setRole(Boolean role) {
     this.role = role;
   }
 }

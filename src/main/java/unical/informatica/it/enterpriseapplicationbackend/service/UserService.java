@@ -14,6 +14,7 @@ import unical.informatica.it.enterpriseapplicationbackend.model.Role;
 import unical.informatica.it.enterpriseapplicationbackend.model.VerificationToken;
 import unical.informatica.it.enterpriseapplicationbackend.model.dao.AddressDAO;
 import unical.informatica.it.enterpriseapplicationbackend.model.dao.LocalUserDAO;
+import unical.informatica.it.enterpriseapplicationbackend.model.dao.ProductDAO;
 import unical.informatica.it.enterpriseapplicationbackend.model.dao.VerificationTokenDAO;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
@@ -27,6 +28,7 @@ import java.util.Optional;
  */
 @Service
 public class UserService {
+
 
   /** The LocalUserDAO. */
   private LocalUserDAO localUserDAO;
@@ -51,7 +53,7 @@ public class UserService {
    * @param emailService
    */
   public UserService(LocalUserDAO localUserDAO, VerificationTokenDAO verificationTokenDAO, EncryptionService encryptionService,
-                     JWTService jwtService, EmailService emailService, AddressService addressService) {
+                     JWTService jwtService, EmailService emailService, AddressService addressService, ProductDAO productDAO) {
     this.localUserDAO = localUserDAO;
     this.verificationTokenDAO = verificationTokenDAO;
     this.encryptionService = encryptionService;
@@ -77,7 +79,7 @@ public class UserService {
     user.setFirstName(registrationBody.getFirstName());
     user.setLastName(registrationBody.getLastName());
     user.setPassword(encryptionService.encryptPassword(registrationBody.getPassword()));
-    user.setRole(Role.USER);
+    user.setRole(false);
     VerificationToken verificationToken = createVerificationToken(user);
     emailService.sendVerificationEmail(verificationToken);
     return localUserDAO.save(user);
