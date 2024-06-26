@@ -11,17 +11,12 @@
  */
 package com.unical.amazing.swagger.models
 
-/**
- *
- * @param totalPrice
- * @param paymentMethod
- * @param userId
- * @param productDtoList
- */
 data class OrderDto(
-    val id: Int,
-    val product: List<ProductDto>,
+    val id: Long,
+    val products: List<ProductWithQuantityDto>
+)
+
+data class ProductWithQuantityDto(
+    val product: ProductDto,
     val quantity: Int
 )
-{
-}

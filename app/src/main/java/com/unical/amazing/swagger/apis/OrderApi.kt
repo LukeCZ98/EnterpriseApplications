@@ -55,23 +55,31 @@ class OrderApi(context: Context, // Aggiungi il Context come parametro
      * @return kotlin.Array<OrderDto>
      */
     @Suppress("UNCHECKED_CAST")
-    fun getAllByUser(token: String): Map<String, Any?> {
+    fun getAllByUser(token: String): List<Map<String, Any?>> {
         val headers = mapOf("Authorization" to "Bearer $token")
         val localVariableConfig = RequestConfig(
-                RequestMethod.GET,
-                "/orders",
-                headers = headers
+            RequestMethod.GET,
+            "/orders",
+            headers = headers
         )
-        val response = request<kotlin.Array<OrderDto>>(
-                localVariableConfig
+        val response = request<List<Map<String, Any?>>>(
+            localVariableConfig
         )
 
+
         return when (response.responseType) {
-            ResponseType.Success -> (response as Success<*>).data as Map<String, Any?>
+            ResponseType.Success -> (response as Success<*>).data as List<Map<String, Any?>>
             ResponseType.Informational -> TODO()
             ResponseType.Redirection -> TODO()
-            ResponseType.ClientError -> throw ClientException((response as ClientError<*>).body as? String ?: "Client error")
-            ResponseType.ServerError -> throw ServerException((response as ServerError<*>).message ?: "Server error")
+            ResponseType.ClientError -> {
+                throw ClientException((response as ClientError<*>).body as? String ?: "Client error")
+            }
+            ResponseType.ServerError -> {
+                throw ServerException((response as ServerError<*>).message ?: "Server error")
+            }
         }
     }
+
+
+
 }

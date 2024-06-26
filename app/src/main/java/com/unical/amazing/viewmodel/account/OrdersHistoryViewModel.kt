@@ -14,13 +14,15 @@ import kotlinx.coroutines.launch
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
+import com.unical.amazing.swagger.models.ProductWithQuantity
+import com.unical.amazing.swagger.models.ProductWithQuantityDto
 
 class OrdersHistoryViewModel(context: Context) : ViewModel() {
     private val _orders = MutableStateFlow<List<OrderDto>?>(null)
     val orders: StateFlow<List<OrderDto>?> get() = _orders
     private val token = AuthViewModel(context).getToken()
     private val ord = OrderApi(context)
-
+    private var response: List<Map<String, Any?>>? = null
     private val moshi: Moshi = Moshi.Builder()
         .addLast(KotlinJsonAdapterFactory())
         .build()
@@ -34,22 +36,40 @@ class OrdersHistoryViewModel(context: Context) : ViewModel() {
 
     private fun fetchUsrOrders() {
         viewModelScope.launch(Dispatchers.IO) {
-            try {  //TODO() -> mappare ed estrarre bene i dati,sul backend funziona
-                val response: Map<String, Any?>? = token?.let { ord.getAllByUser(it) } as? Map<String, Any?>
-                val orderDtos: List<OrderDto> = response?.get("quantities")?.let { quantities ->
-                    (quantities as? List<Map<String, Any?>>)?.mapNotNull { quantity ->
-                        val product = quantity["product"] as? Map<String, Any?>
-                        product?.let {
-                            val productJson = moshi.adapter(Map::class.java).toJson(product)
-                            val productDto = productDtoAdapter.fromJson(productJson)
-                            OrderDto(
-                                id = quantity["id"] as? Int ?: return@mapNotNull null,
-                                product = listOfNotNull(productDto),
-                                quantity = quantity["quantity"] as? Int ?: return@mapNotNull null
-                            )
+            try {
+                response = token?.let { ord.getAllByUser(it) }
+                println("Raw Response: $response")
+
+                // Mappa temporanea per raccogliere i prodotti e le quantità per ogni ordine
+                val ordersMap = mutableMapOf<Long, MutableList<ProductWithQuantity>>()
+
+                response?.forEach { outerMap ->
+                    val orderId = (outerMap["id"] as? Number)?.toLong() ?: return@forEach
+                    val quantities = outerMap["quantities"] as? List<Map<String, Any?>>
+
+                    quantities?.forEach { orderMap ->
+                        val productMap = orderMap["product"] as? Map<String, Any?>
+                        val productDto = productMap?.let {
+                            val productJson = moshi.adapter(Map::class.java).toJson(it)
+                            productDtoAdapter.fromJson(productJson)
                         }
-                    } ?: emptyList()
-                } ?: emptyList()
+                        val quantity = (orderMap["quantity"] as? Number)?.toInt()
+
+                        if (productDto != null && quantity != null) {
+                            ordersMap.getOrPut(orderId) { mutableListOf() }.add(ProductWithQuantity(productDto, quantity))
+                        }
+                    }
+                }
+
+                // Convertire la mappa in una lista di OrderDto
+                val orderDtos = ordersMap.map { (orderId, productsList) ->
+                    OrderDto(
+                        id = orderId,
+                        products = productsList.map { ProductWithQuantityDto(it.product, it.quantity) }
+                    )
+                }
+
+                println("Mapped OrderDtos: $orderDtos")
                 _orders.value = orderDtos
             } catch (e: Exception) {
                 e.printStackTrace()
@@ -57,4 +77,9 @@ class OrdersHistoryViewModel(context: Context) : ViewModel() {
             }
         }
     }
+
+
+
+
+
 }
