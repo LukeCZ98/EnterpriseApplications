@@ -89,7 +89,7 @@ public class ProductController {
 
 
 
-//metodo funzionante inserire verifica utente
+//metodi funzionanti inserire verifica utente admin -> update add e delete
 @PostMapping("/update")
 public ResponseEntity<String> updateProduct(@Valid @RequestBody Product product) {
 
@@ -102,12 +102,26 @@ public ResponseEntity<String> updateProduct(@Valid @RequestBody Product product)
 }
 
 
-  @PostMapping("/add")
-  public Product addProduct(@Valid @RequestBody Product product) {
+@PostMapping("/add")
+public Product addProduct(@Valid @RequestBody Product product) {
 
-    return productDAO.save(product);
+   return productDAO.save(product);
 
-  }
+}
+
+
+@PostMapping("/delete")
+public ResponseEntity<String> delProduct(@Valid @RequestBody Product product) {
+    try{
+      productService.deleteProduct(product);
+      return ResponseEntity.ok().build();
+    }
+    catch (Exception e){
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("errore");
+    }
+}
+
+
 
 
 
