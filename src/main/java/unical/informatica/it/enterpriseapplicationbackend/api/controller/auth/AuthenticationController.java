@@ -44,14 +44,12 @@ public class AuthenticationController {
    * @return Response to front end.
    */
   @PostMapping("/register")
-  public ResponseEntity<Void> registerUser(@Valid @RequestBody RegistrationBody registrationBody) {
+  public RegistrationBody registerUser(@Valid @RequestBody RegistrationBody registrationBody) {
     try {
       userService.registerUser(registrationBody);
-      return ResponseEntity.ok().build();
-    } catch (UserAlreadyExistsException ex) {
-      return ResponseEntity.status(HttpStatus.CONFLICT).build();
-    } catch (EmailFailureException e) {
-      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+      return registrationBody;
+    } catch (UserAlreadyExistsException | EmailFailureException ex) {
+      return registrationBody;
     }
   }
 
