@@ -3,12 +3,14 @@ package com.unical.amazing.viewmodel.auth
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.lifecycle.ViewModel
+import com.squareup.moshi.JsonDataException
 import com.unical.amazing.swagger.apis.AuthApi
 import io.ktor.http.cio.Response
 import io.swagger.client.infrastructure.ResponseType
 import io.swagger.client.infrastructure.Success
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import java.io.EOFException
 
 class AuthViewModel(context: Context) : ViewModel() {
 
@@ -38,21 +40,30 @@ class AuthViewModel(context: Context) : ViewModel() {
         return withContext(Dispatchers.IO) {
             try {
                 // Esegui la richiesta di registrazione
-                val response: Any = authApi.register(body)
+                val response = authApi.register(body)
+
+                // Log the response for debugging
+                println("AuthApi Response: $response")
 
                 // Controlla se la risposta è un successo e il codice di stato è 200
-                if (response is Map<*, *> && response["statusCode"] == 200) {
+                if (response == 200) {
                     "200"
                 } else {
-                    // Puoi adattare cosa restituire in altri casi di successo
                     response.toString()
                 }
+            } catch (e: EOFException) {
+                println("AuthApi EOFException: End of input , $e")
+                null
+            } catch (e: JsonDataException) {
+                println("AuthApi JsonDataException: Error parsing JSON, $e")
+                null
             } catch (e: Exception) {
-                e.printStackTrace()
+                println("AuthApi Exception: An unexpected error occurred, $e")
                 null
             }
         }
     }
+
 
 
     private fun saveToken(token: String) {

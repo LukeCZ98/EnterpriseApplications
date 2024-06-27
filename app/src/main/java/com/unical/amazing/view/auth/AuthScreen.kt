@@ -29,6 +29,7 @@ import androidx.navigation.NavController
 import com.unical.amazing.R
 import com.unical.amazing.viewmodel.auth.AuthViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @Composable
@@ -118,31 +119,35 @@ fun AuthScreen(
 
             if (password.matches(passwordRegex)) {
                 if (email.matches(emailRegex))  {
-                    coroutineScope.launch(Dispatchers.IO) {
-                        val regData = mapOf("username" to username,"email" to email, "password" to password,"firstName" to firstName,"lastName" to lastName)
+                    coroutineScope.launch(Dispatchers.Main) { // Cambio a Dispatchers.Main
+                        val regData = mapOf(
+                            "username" to username,
+                            "email" to email,
+                            "password" to password,
+                            "firstName" to firstName,
+                            "lastName" to lastName
+                        )
                         val response = auth.register(regData)
-                        if(response == "200"){  //controllare se codice modificato funziona per gli errormessage e per redirect
+                        if (response == "200") {
                             errorMessage = "Registrazione avvenuta correttamente,\n ora verificare la mail per attivare il tuo account."
                             onRegister(username, password, email, firstName, lastName)
+                            delay(3000)
                             navController.navigate("login") { popUpTo("login") { inclusive = true } }
-                        }
-                        else{
+                        } else {
                             errorMessage = "Errore sconosciuto durante registrazione."
                         }
                     }
-                }
-                else {
+                } else {
                     errorMessage = "L'email non è valida."
                 }
-            }
-            else{
+            } else {
                 errorMessage = "La password deve contenere almeno 8 caratteri, inclusi almeno una lettera maiuscola, una lettera minuscola, un numero e un carattere speciale."
             }
-
         } else {
             errorMessage = "Compila tutti i campi e assicurati che le password corrispondano."
         }
     }
+
 
 
 
