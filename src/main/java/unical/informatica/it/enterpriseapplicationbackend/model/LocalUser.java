@@ -51,12 +51,18 @@ public class LocalUser implements UserDetails {
   private List<VerificationToken> verificationTokens = new ArrayList<>();
   /** Has the users email been verified? */
 
+  @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+  private List<Wishlist> wishlists = new ArrayList<>();
+
   @Column(name = "email_verified", nullable = false)
   private Boolean emailVerified = false;
 
 
   @Column (name = "role", nullable = false)
   private Boolean role;
+
+  @ManyToMany(mappedBy = "sharedWith")
+  private List<Wishlist> sharedWishlists = new ArrayList<>();
 
   /**
    * Is the email verified?
@@ -254,5 +260,25 @@ public class LocalUser implements UserDetails {
    */
   public void setRole(Boolean role) {
     this.role = role;
+  }
+
+  public List<Wishlist> getWishlists() {
+    return wishlists;
+  }
+
+  public void setWishlists(List<Wishlist> wishlists) {
+    this.wishlists = wishlists;
+  }
+
+  public Boolean getEmailVerified() {
+    return emailVerified;
+  }
+
+  public List<Wishlist> getSharedWishlists() {
+    return sharedWishlists;
+  }
+
+  public void setSharedWishlists(List<Wishlist> sharedWishlists) {
+    this.sharedWishlists = sharedWishlists;
   }
 }

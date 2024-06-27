@@ -3,6 +3,8 @@ package unical.informatica.it.enterpriseapplicationbackend.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
+import java.util.List;
+
 /**
  * A product available for purchasing.
  */
@@ -31,6 +33,9 @@ public class Product {
   @Column(name = "available", nullable = false)
   private Boolean available;
 
+  @JsonIgnore
+  @ManyToMany(mappedBy = "products")
+  private List<Wishlist> wishlists;
 
   /** The inventory of the product. */
   @JsonIgnore
@@ -140,5 +145,13 @@ public class Product {
 
   public void setAvailable(Boolean available) {
     this.available = available;
+  }
+
+  public List<Wishlist> getWishlists() {
+    return wishlists;
+  }
+
+  public void setWishlists(List<Wishlist> wishlists) {
+    this.wishlists = wishlists;
   }
 }

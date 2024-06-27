@@ -55,38 +55,6 @@ public class ProductController {
     return productService.getProdsbyname(name);
   }
 
-  // @PreAuthorize("hasRole('ADMIN')")
-  @PatchMapping("/{productId}")
-  public ResponseEntity<Product> patchProduct(
-          @AuthenticationPrincipal LocalUser user,
-          @PathVariable Long productId,
-          @RequestBody Product updatedProduct) {
-
-
-    // Ensure the updated product has the correct ID
-    if (updatedProduct.getId() == productId) {
-      // Retrieve the original product from the database
-      Optional<Product> opOriginalProduct = productDAO.findById(productId);
-      if (opOriginalProduct.isPresent()) {
-        Product originalProduct = opOriginalProduct.get();
-
-        // Perform updates only on specified fields (title in this example)
-        if (updatedProduct.getTitle() != null && !updatedProduct.getTitle().isEmpty()) {
-          originalProduct.setTitle(updatedProduct.getTitle());
-        }
-        // You can add similar checks and updates for other fields like description, price, etc.
-
-        // Save the updated product
-        Product savedProduct = productDAO.save(originalProduct);
-
-        return ResponseEntity.ok(savedProduct);
-      }
-    }
-
-    // If any condition fails, return bad request
-    return ResponseEntity.badRequest().build();
-  }
-
 
 
 //metodi funzionanti inserire verifica utente admin -> update add e delete

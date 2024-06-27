@@ -1,11 +1,7 @@
 package unical.informatica.it.enterpriseapplicationbackend.model.dao;
 
-import org.springframework.lang.NonNull;
 import unical.informatica.it.enterpriseapplicationbackend.model.LocalUser;
 import org.springframework.data.repository.ListCrudRepository;
-import unical.informatica.it.enterpriseapplicationbackend.model.Role;
-
-import java.util.List;
 import java.util.Optional;
 
 /**
