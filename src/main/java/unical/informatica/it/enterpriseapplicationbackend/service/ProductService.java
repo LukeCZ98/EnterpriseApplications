@@ -54,7 +54,12 @@ public class ProductService {
 //    productDAO.save(product);
 //  }
 
-
+  public Product findById(Long id) {
+    if(productDAO.findById(id).isPresent())
+      return productDAO.findById(id).get();
+    else
+      return null;
+  }
 
 
 

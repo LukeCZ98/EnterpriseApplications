@@ -57,36 +57,41 @@ public class ProductController {
 
 
 
-//metodi funzionanti inserire verifica utente admin -> update add e delete
-@PostMapping("/update")
-public ResponseEntity<String> updateProduct(@Valid @RequestBody Product product) {
 
+@PostMapping("/update")
+public ResponseEntity<String> updateProduct(@Valid @RequestBody Product product,@AuthenticationPrincipal LocalUser user) {
+    if(user.getRole())
         if(productService.updateProduct(product))
           return ResponseEntity.ok().build();
         else{
           return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("errore");
         }
-
+    else
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("errore");
 }
 
 
 @PostMapping("/add")
-public Product addProduct(@Valid @RequestBody Product product) {
-
-   return productDAO.save(product);
-
+public Product addProduct(@Valid @RequestBody Product product,@AuthenticationPrincipal LocalUser user) {
+    if(user.getRole())
+        return productDAO.save(product);
+    else
+        return null;
 }
 
 
 @PostMapping("/delete")
-public ResponseEntity<String> delProduct(@Valid @RequestBody Product product) {
-    try{
-      productService.deleteProduct(product);
-      return ResponseEntity.ok().build();
-    }
-    catch (Exception e){
-      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("errore");
-    }
+public ResponseEntity<String> delProduct(@Valid @RequestBody Product product,@AuthenticationPrincipal LocalUser user) {
+    if(user.getRole())
+      try{
+          productService.deleteProduct(product);
+          return ResponseEntity.ok().build();
+        }
+        catch (Exception e){
+          return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("errore");
+        }
+    else
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("errore");
 }
 
 

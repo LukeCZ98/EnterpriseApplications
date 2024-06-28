@@ -34,7 +34,7 @@ public class Product {
   private Boolean available;
 
   @JsonIgnore
-  @ManyToMany(mappedBy = "products")
+  @ManyToMany(mappedBy = "items")
   private List<Wishlist> wishlists;
 
   /** The inventory of the product. */

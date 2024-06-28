@@ -32,7 +32,7 @@ public class Wishlist {
             joinColumns = @JoinColumn(name = "wishlist_id"),
             inverseJoinColumns = @JoinColumn(name = "product_id")
     )
-    private List<Product> products = new ArrayList<>();
+    private List<Product> items = new ArrayList<>();
 
 
     @ManyToMany
@@ -75,12 +75,12 @@ public class Wishlist {
         this.user = user;
     }
 
-    public List<Product> getProducts() {
-        return products;
+    public List<Product> getItems() {
+        return items;
     }
 
-    public void setProducts(List<Product> products) {
-        this.products = products;
+    public void setItems(List<Product> items) {
+        this.items = items;
     }
 
 

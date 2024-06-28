@@ -44,23 +44,17 @@ public class WishlistService {
 
     public Wishlist updateWishlist(Long id, Wishlist wishlist) throws Exception {
         Optional<Wishlist> existingWishlist = wishlistDAO.findById(id);
-        if (existingWishlist.isPresent()) {
-            Wishlist existing = existingWishlist.get();
-            // Controllo per evitare duplicati se il nome è cambiato
-            if (!existing.getName().equals(wishlist.getName())) {
-                List<Wishlist> wishlistWithSameName = wishlistDAO.findByNameAndUser(wishlist.getName(), wishlist.getUser());
-                if (wishlistWithSameName!=null) {
-                    throw new Exception("A wishlist with the same name already exists for this user.");
-                }
-            }
-            // Aggiorna i campi della wishlist
-            existing.setName(wishlist.getName());
-            existing.setVisibility(wishlist.getVisibility());
-            existing.setProducts(wishlist.getProducts());
-            return wishlistDAO.save(existing);
-        } else {
+        if (existingWishlist.isEmpty()) {
             throw new Exception("Wishlist not found.");
         }
+        Wishlist updatedWishlist = existingWishlist.get();
+        updatedWishlist.setName(wishlist.getName());
+        updatedWishlist.setItems(wishlist.getItems());
+        return wishlistDAO.save(updatedWishlist);
+    }
+
+    public List<Wishlist> findPublicWishlists() {
+        return wishlistDAO.findByIsPublic();
     }
 
 }
