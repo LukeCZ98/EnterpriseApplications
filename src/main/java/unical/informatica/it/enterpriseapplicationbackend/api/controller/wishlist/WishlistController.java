@@ -3,19 +3,25 @@ package unical.informatica.it.enterpriseapplicationbackend.api.controller.wishli
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import unical.informatica.it.enterpriseapplicationbackend.mappers.WishlistMapper;
+import unical.informatica.it.enterpriseapplicationbackend.mappers.WishlistSharedUserMapper;
 import unical.informatica.it.enterpriseapplicationbackend.model.LocalUser;
 import unical.informatica.it.enterpriseapplicationbackend.model.Product;
 import unical.informatica.it.enterpriseapplicationbackend.model.Wishlist;
-import unical.informatica.it.enterpriseapplicationbackend.model.dao.WishlistDAO;
+import unical.informatica.it.enterpriseapplicationbackend.model.WishlistSharedUser;
+import unical.informatica.it.enterpriseapplicationbackend.model.dto.WishlistDTO;
+import unical.informatica.it.enterpriseapplicationbackend.model.dto.WishlistSharedUserDTO;
 import unical.informatica.it.enterpriseapplicationbackend.service.ProductService;
 import unical.informatica.it.enterpriseapplicationbackend.service.WishlistService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import unical.informatica.it.enterpriseapplicationbackend.service.WishlistSharedUserService;
+
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
-
-
+//CONTROLLER FUNZIONANTE PER INTERO
 
 @RestController
 @RequestMapping("/wishlists")
@@ -26,23 +32,44 @@ public class WishlistController {
 
     @Autowired
     private ProductService productService;
-    @Autowired
-    private WishlistDAO wishlistDAO;
 
-    @GetMapping  //FUNZIONA  -> aggiustare return
-    public ResponseEntity<List<Wishlist>> getWishlists(@AuthenticationPrincipal LocalUser user) {
+    private final WishlistMapper wishlistMapper;
+
+    private final WishlistSharedUserMapper wishlistSharedUserMapper;
+    private final WishlistSharedUserService wishlistSharedUserService;
+
+    @Autowired
+    public WishlistController(WishlistService wishlistService, WishlistMapper wishlistMapper, WishlistSharedUserMapper wishlistSharedUserMapper, WishlistSharedUserService wishlistSharedUserService) {
+        this.wishlistService = wishlistService;
+        this.wishlistMapper = wishlistMapper;
+        this.wishlistSharedUserMapper = wishlistSharedUserMapper;
+        this.wishlistSharedUserService = wishlistSharedUserService;
+    }
+
+    @GetMapping("/all")  // FUNZIONA
+    public ResponseEntity<List<WishlistDTO>> getWishlists(@AuthenticationPrincipal LocalUser user) {
         List<Wishlist> wishlists = wishlistService.findByUser(user);
-        if (wishlists != null) {
-            return new ResponseEntity<>(wishlists, HttpStatus.OK);
+        if (wishlists != null && !wishlists.isEmpty()) {
+            List<WishlistDTO> wishlistDTOs = wishlists.stream()
+                    .map(wishlistMapper::toDTO)
+                    .collect(Collectors.toList());
+            return new ResponseEntity<>(wishlistDTOs, HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
 
-    @GetMapping("/shared") //FUNZIONA -> aggiustare return
-    public ResponseEntity<List<Wishlist>> getWishlistsSharedWithUser(@AuthenticationPrincipal LocalUser user) {
-        List<Wishlist> sharedWishlists = wishlistService.findSharedWithUser(user);
-        return new ResponseEntity<>(sharedWishlists, HttpStatus.OK);
+    @GetMapping("/shared")  //FUNZIONA
+    public ResponseEntity<List<WishlistSharedUserDTO>> getWishlistsSharedWithUser(@AuthenticationPrincipal LocalUser user) {
+        List<WishlistSharedUser> sharedWishlists = wishlistSharedUserService.findSharedWithUser(user);
+        if (sharedWishlists != null && !sharedWishlists.isEmpty()) {
+            List<WishlistSharedUserDTO> wishlistSharedUserDTOs = sharedWishlists.stream()
+                    .map(wishlistSharedUserMapper::toDTO)
+                    .collect(Collectors.toList());
+            return new ResponseEntity<>(wishlistSharedUserDTOs, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
 
     @PostMapping("/add")  //FUNZIONA
@@ -83,22 +110,22 @@ public class WishlistController {
         }
     }
 
-    @DeleteMapping("/delete")
-    public ResponseEntity<Void> deleteWishlist(@RequestParam Long id, @AuthenticationPrincipal LocalUser user) {
+    @DeleteMapping("/delete/{id}") //FUNZIONA
+    public ResponseEntity<Void> deleteWishlist(@PathVariable Long id, @AuthenticationPrincipal LocalUser user) {
         Optional<Wishlist> wishlist = wishlistService.findById(id);
         if (wishlist.isEmpty() || !wishlist.get().getUser().getId().equals(user.getId())) {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
-        wishlistService.delete(wishlist.get());
+        wishlistService.delete(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
 
 
-    @PostMapping("/addItem")
-    public ResponseEntity<Wishlist> addItemToWishlist(@RequestParam Long wishlistId, @RequestParam Long itemId, @AuthenticationPrincipal LocalUser user) {
+    @PostMapping("/addItem/{wid}/{itemId}") //FUNZIONA
+    public ResponseEntity<Wishlist> addItemToWishlist(@PathVariable Long wid, @PathVariable Long itemId, @AuthenticationPrincipal LocalUser user) {
         try {
-            Optional<Wishlist> wishlist = wishlistService.findById(wishlistId);
+            Optional<Wishlist> wishlist = wishlistService.findById(wid);
             if (wishlist.isEmpty() || !wishlist.get().getUser().getId().equals(user.getId())) {
                 return new ResponseEntity<>(HttpStatus.FORBIDDEN);
             }
@@ -109,19 +136,20 @@ public class WishlistController {
             }
 
             wishlist.get().getItems().add(item);
-            Wishlist updatedWishlist = wishlistService.save(wishlist.get());
+            Wishlist updatedWishlist = wishlistService.updateWishlist(wishlist.get().getId(), wishlist.get());
             return new ResponseEntity<>(updatedWishlist, HttpStatus.OK);
         } catch (Exception e) {
+            System.out.println(e.getMessage());
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
 
 
 
-    @DeleteMapping("/removeItem")
-    public ResponseEntity<Wishlist> removeItemFromWishlist(@RequestParam Long wishlistId, @RequestParam Long itemId, @AuthenticationPrincipal LocalUser user) {
+    @DeleteMapping("/removeItem/{wid}/{itemId}") //FUNZIONA
+    public ResponseEntity<Wishlist> removeItemFromWishlist(@PathVariable Long wid, @PathVariable Long itemId, @AuthenticationPrincipal LocalUser user) {
         try {
-            Optional<Wishlist> wishlist = wishlistService.findById(wishlistId);
+            Optional<Wishlist> wishlist = wishlistService.findById(wid);
             if (wishlist.isEmpty() || !wishlist.get().getUser().getId().equals(user.getId())) {
                 return new ResponseEntity<>(HttpStatus.FORBIDDEN);
             }
@@ -132,7 +160,7 @@ public class WishlistController {
             }
 
             wishlist.get().getItems().remove(item);
-            Wishlist updatedWishlist = wishlistService.save(wishlist.get());
+            Wishlist updatedWishlist = wishlistService.updateWishlist(wishlist.get().getId(), wishlist.get());
             return new ResponseEntity<>(updatedWishlist, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
