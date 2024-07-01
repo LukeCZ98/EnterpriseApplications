@@ -44,19 +44,17 @@ public class ProductService {
   //elimina prodotto
   public void deleteProduct(Product product) {
     Optional<Product> prod = productDAO.find(product.getId());
-    if (prod.isPresent()) {
-      productDAO.delete(prod.get());
-    }
+      prod.ifPresent(value -> productDAO.delete(value));
   }
 
-//
-//  public void addProduct(Product product) {
-//    productDAO.save(product);
-//  }
+
+  public Product addProduct(Product product) {
+    return productDAO.save(product);
+  }
 
   public Product findById(Long id) {
-    if(productDAO.findById(id).isPresent())
-      return productDAO.findById(id).get();
+    if(productDAO.find(id).isPresent())
+      return productDAO.find(id).get();
     else
       return null;
   }

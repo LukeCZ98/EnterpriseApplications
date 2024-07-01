@@ -1,5 +1,6 @@
 package unical.informatica.it.enterpriseapplicationbackend.service;
 
+import org.springframework.cglib.core.Local;
 import unical.informatica.it.enterpriseapplicationbackend.api.model.LoginBody;
 import unical.informatica.it.enterpriseapplicationbackend.api.model.PasswordResetBody;
 import unical.informatica.it.enterpriseapplicationbackend.api.model.RegistrationBody;
@@ -206,6 +207,27 @@ public class UserService {
     address.setCountry(userUpdateBody.getCountry());
     address.setCAP(userUpdateBody.getCap());
     addressService.saveAddress(address);
+  }
+
+  public List<LocalUser> findAll(){
+    return localUserDAO.findAll();
+  }
+
+
+  public LocalUser findById(Long id) {
+    return localUserDAO.findById(id).get();
+  }
+
+  public LocalUser add(LocalUser user) {
+    LocalUser usr = new LocalUser();
+    usr.setEmail(user.getEmail());
+    usr.setUsername(user.getUsername());
+    usr.setFirstName(user.getFirstName());
+    usr.setLastName(user.getLastName());
+    usr.setPassword(encryptionService.encryptPassword(user.getPassword()));
+    usr.setRole(false);
+    usr.setEmailVerified(true);
+    return localUserDAO.save(usr);
   }
 
 }

@@ -26,7 +26,7 @@ public class Wishlist {
     @JoinColumn(name = "user_id", nullable = false)
     private LocalUser user;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     @JoinTable(
             name = "wishlist_products",
             joinColumns = @JoinColumn(name = "wishlist_id"),
@@ -35,7 +35,7 @@ public class Wishlist {
     private List<Product> items = new ArrayList<>();
 
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     @JoinTable(
             name = "wishlist_shared_users",
             joinColumns = @JoinColumn(name = "wishlist_id"),

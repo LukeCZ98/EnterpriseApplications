@@ -19,7 +19,7 @@ public class Address {
   @Column(name = "id", nullable = false)
   private Long id;
   /** The first line of address. */
-  @Column(name = "address_line_1", nullable = false, length = 512)
+  @Column(name = "address_line_1", nullable = true, length = 512)
   private String address;
 
   /** The second line of address. */
@@ -27,16 +27,16 @@ public class Address {
   @Column(name = "address_line_2", length = 512)
   private String addressLine2;
   /** The city of the address. */
-  @Column(name = "city", nullable = false)
+  @Column(name = "city", nullable = true)
   private String city;
   /** The country of the address. */
-  @Column(name = "country", nullable = false, length = 75)
+  @Column(name = "country", nullable = true, length = 75)
   private String country;
 
-  @Column(name = "phone", nullable = false, length = 12)
+  @Column(name = "phone", nullable = true, length = 12)
   private String phone;
 
-  @Column(name = "CAP", nullable = false, length = 5)
+  @Column(name = "CAP", nullable = true, length = 5)
   private Integer CAP;
 
   /** The user the address is associated with. */

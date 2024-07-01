@@ -51,7 +51,7 @@ public class LocalUser implements UserDetails {
   private List<VerificationToken> verificationTokens = new ArrayList<>();
   /** Has the users email been verified? */
 
-  @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+  @OneToMany(mappedBy = "user",fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
   private List<Wishlist> wishlists = new ArrayList<>();
 
   @Column(name = "email_verified", nullable = false)
@@ -61,7 +61,7 @@ public class LocalUser implements UserDetails {
   @Column (name = "role", nullable = false)
   private Boolean role;
 
-  @ManyToMany(mappedBy = "sharedWith")
+  @ManyToMany(fetch = FetchType.EAGER, mappedBy = "sharedWith", cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
   private List<Wishlist> sharedWishlists = new ArrayList<>();
 
   /**

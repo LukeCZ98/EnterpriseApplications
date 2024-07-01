@@ -16,6 +16,8 @@ import javax.swing.text.html.parser.Entity;
 import java.util.List;
 import java.util.Optional;
 
+
+//CONTROLLER FUNZIONANTE PER INTERO
 /**
  * Controller to handle the creation, updating & viewing of products.
  */
@@ -72,11 +74,11 @@ public ResponseEntity<String> updateProduct(@Valid @RequestBody Product product,
 
 
 @PostMapping("/add")
-public Product addProduct(@Valid @RequestBody Product product,@AuthenticationPrincipal LocalUser user) {
+public ResponseEntity<Product> addProduct(@Valid @RequestBody Product product,@AuthenticationPrincipal LocalUser user) {
     if(user.getRole())
-        return productDAO.save(product);
+        return ResponseEntity.ok().body(productService.addProduct(product));
     else
-        return null;
+        return ResponseEntity.badRequest().body(null);
 }
 
 

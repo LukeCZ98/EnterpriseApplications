@@ -6,7 +6,6 @@ import unical.informatica.it.enterpriseapplicationbackend.exception.EmailNotFoun
 import unical.informatica.it.enterpriseapplicationbackend.exception.UserAlreadyExistsException;
 import unical.informatica.it.enterpriseapplicationbackend.exception.UserNotVerifiedException;
 import unical.informatica.it.enterpriseapplicationbackend.model.LocalUser;
-import unical.informatica.it.enterpriseapplicationbackend.model.Role;
 import unical.informatica.it.enterpriseapplicationbackend.service.JWTService;
 import unical.informatica.it.enterpriseapplicationbackend.service.UserService;
 import jakarta.validation.Valid;
@@ -14,8 +13,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.ModelAndView;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+
+//CONTROLLER FUNZIONANTE PER INTERO
 /**
  * Rest Controller for handling authentication requests.
  */
@@ -28,12 +31,15 @@ public class AuthenticationController {
   /** The jwt service. */
   private final JWTService jwtService;
 
+  private final String SUCCESS = Files.readString(Paths.get("src/main/resources/templates/verification_success.html"));
+  private final String FAILURE = Files.readString(Paths.get("src/main/resources/templates/verification_failure.html"));
+
   /**
    * Spring injected constructor.
    * @param userService The user service.
    * @param jwtService The JWT service.
    */
-  public AuthenticationController(UserService userService, JWTService jwtService) {
+  public AuthenticationController(UserService userService, JWTService jwtService) throws IOException {
     this.userService = userService;
     this.jwtService = jwtService;
   }
@@ -87,19 +93,18 @@ public class AuthenticationController {
 
   /**
    * Get mapping to verify the email of an account using the emailed token.
+   *
    * @param token The token emailed for verification. This is not the same as a
    *              authentication JWT.
    * @return HTML page indicating the verification status.
    */
   @GetMapping("/verify")
-  public ModelAndView verifyEmail(@RequestParam String token) {
-    ModelAndView modelAndView = new ModelAndView();
+  public String verifyEmail(@RequestParam String token) {
     if (userService.verifyUser(token)) {
-      modelAndView.setViewName("verification_success"); // Name of the HTML file for success
+      return SUCCESS; // Name of the HTML file for success
     } else {
-      modelAndView.setViewName("verification_failure"); // Name of the HTML file for failure
+      return FAILURE; // Name of the HTML file for failure
     }
-    return modelAndView;
   }
 
   /**

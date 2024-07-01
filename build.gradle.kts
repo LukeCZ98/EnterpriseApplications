@@ -47,7 +47,7 @@ dependencies {
 	implementation("org.springframework.security:spring-security-messaging:6.3.0")
 	implementation ("com.fasterxml.jackson.core:jackson-databind:2.15.0")
 	implementation ("com.fasterxml.jackson.core:jackson-annotations:2.15.0")
-
+	testImplementation ("org.mockito:mockito-core")
 }
 
 tasks.withType<Test> {

@@ -37,8 +37,8 @@ public class WishlistService {
         return wishlistDAO.save(wishlist);
     }
 
-    public void delete(Long id) {
-        wishlistDAO.deleteById(id);
+    public void delete(Wishlist wishlist) {
+        wishlistDAO.delete(wishlist);
     }
 
 

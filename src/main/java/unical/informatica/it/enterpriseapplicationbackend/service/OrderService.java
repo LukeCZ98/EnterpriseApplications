@@ -1,12 +1,17 @@
 package unical.informatica.it.enterpriseapplicationbackend.service;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import unical.informatica.it.enterpriseapplicationbackend.model.LocalUser;
+import unical.informatica.it.enterpriseapplicationbackend.model.Product;
 import unical.informatica.it.enterpriseapplicationbackend.model.WebOrder;
+import unical.informatica.it.enterpriseapplicationbackend.model.WebOrderQuantities;
+import unical.informatica.it.enterpriseapplicationbackend.model.dao.LocalUserDAO;
 import unical.informatica.it.enterpriseapplicationbackend.model.dao.WebOrderDAO;
 import org.springframework.stereotype.Service;
+import unical.informatica.it.enterpriseapplicationbackend.model.dao.WebOrderQuantitiesDAO;
 
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Service for handling order actions.
@@ -14,15 +19,27 @@ import java.util.Optional;
 @Service
 public class OrderService {
 
+  private final UserService userService;
+  private final LocalUserDAO localUserDAO;
   /** The Web Order DAO. */
+  @Autowired
   private WebOrderDAO webOrderDAO;
+
+  @Autowired
+  private ProductService productService;
+
+  @Autowired
+  private WebOrderQuantitiesDAO webOrderQuantitiesDAO;
+
 
   /**
    * Constructor for spring injection.
    * @param webOrderDAO
    */
-  public OrderService(WebOrderDAO webOrderDAO) {
+  public OrderService(WebOrderDAO webOrderDAO, UserService userService, LocalUserDAO localUserDAO) {
     this.webOrderDAO = webOrderDAO;
+    this.userService = userService;
+    this.localUserDAO = localUserDAO;
   }
 
   /**
@@ -34,22 +51,20 @@ public class OrderService {
     return webOrderDAO.findByUser(user);
   }
 
+  public List<WebOrder> getAll(){return webOrderDAO.findAll();}
+
+  @Transactional
   public WebOrder addOrder(WebOrder order) {
-    return webOrderDAO.save(order);
+      return webOrderDAO.save(order);
   }
 
   public void removeOrder(WebOrder order) {
     webOrderDAO.delete(order);
   }
 
-  public void updateOrder(WebOrder order) {
-    Optional<WebOrder> ord = webOrderDAO.findById(order.getId());
-    if (ord.isPresent()) {
-      WebOrder ordn = ord.get();
-      ordn.setAddress(order.getAddress());
-      ordn.setQuantities(order.getQuantities());
-      webOrderDAO.save(ordn);
-    }
+
+  public List<WebOrderQuantities> addQuantities(List<WebOrderQuantities> quantities) {
+    return webOrderQuantitiesDAO.saveAll(quantities);
   }
 
 }

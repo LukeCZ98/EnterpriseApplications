@@ -7,7 +7,6 @@ import unical.informatica.it.enterpriseapplicationbackend.model.LocalUser;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import unical.informatica.it.enterpriseapplicationbackend.model.Role;
 
 import java.util.Date;
 
@@ -107,13 +106,4 @@ public class JWTService {
     this.issuer = issuer;
   }
 
-  /**
-   * Gets the roles out of a given JWT.
-   * @param token The JWT to decode.
-   * @return The roles stored inside.
-   */
-  public String getRole(String token) {
-    DecodedJWT jwt = JWT.require(algorithm).withIssuer(issuer).build().verify(token);
-    return jwt.getClaim(ROLES_KEY).asString();
-  }
 }

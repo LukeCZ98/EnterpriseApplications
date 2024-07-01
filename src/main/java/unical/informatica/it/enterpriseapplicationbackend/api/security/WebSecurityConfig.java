@@ -37,7 +37,7 @@ public class WebSecurityConfig {
             // Specific exclusions or rules.
             .requestMatchers("/product/**", "/product/find/**", "/auth/register", "/auth/login",
                     "/auth/verify", "/auth/forgot", "/auth/reset", "/error",
-                    "/websocket", "/websocket/**", "product/edit", "{productId}").permitAll()
+                    "/websocket", "/websocket/**", "{productId}").permitAll()
             // Everything else should be authenticated.
             .anyRequest().authenticated();
     http.requiresChannel()
@@ -45,19 +45,7 @@ public class WebSecurityConfig {
             .requiresSecure();
     return http.build();
   }
-/*
-  protected void configure(HttpSecurity http) throws Exception {
-    http.csrf().disable()
-            .authorizeRequests(authorizeRequests ->
-                    authorizeRequests
-                            .requestMatchers("/api/auth/login/admin").permitAll()
-                            .requestMatchers("/api/auth/login/user").permitAll()
-                            .requestMatchers("/api/admin/**").hasRole("ADMIN")
-                            .anyRequest().authenticated()
-            )
-            .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
-  }
-*/
+
 
   @Bean
   public PasswordEncoder passwordEncoder() {

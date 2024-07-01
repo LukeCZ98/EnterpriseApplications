@@ -1,10 +1,8 @@
 package unical.informatica.it.enterpriseapplicationbackend.api.controller.user;
 
-import jakarta.validation.Valid;
-import unical.informatica.it.enterpriseapplicationbackend.api.model.DataChange;
-import unical.informatica.it.enterpriseapplicationbackend.model.Address;
 import unical.informatica.it.enterpriseapplicationbackend.model.LocalUser;
 import unical.informatica.it.enterpriseapplicationbackend.model.dao.AddressDAO;
+import unical.informatica.it.enterpriseapplicationbackend.model.dao.LocalUserDAO;
 import unical.informatica.it.enterpriseapplicationbackend.service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,7 +11,8 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
+
+//CONTROLLER FUNZIONANTE PER INTERO
 
 /**
  * Rest Controller for user data interactions.
@@ -22,6 +21,7 @@ import java.util.Optional;
 @RequestMapping("/user")
 public class UserController {
 
+  private final LocalUserDAO localUserDAO;
   /** The Address DAO. */
   private AddressDAO addressDAO;
   private SimpMessagingTemplate simpMessagingTemplate;
@@ -35,80 +35,45 @@ public class UserController {
    */
   public UserController(AddressDAO addressDAO,
                         SimpMessagingTemplate simpMessagingTemplate,
-                        UserService userService) {
+                        UserService userService, LocalUserDAO localUserDAO) {
     this.addressDAO = addressDAO;
     this.simpMessagingTemplate = simpMessagingTemplate;
     this.userService = userService;
+    this.localUserDAO = localUserDAO;
   }
 
-  /**
-   * Gets all addresses for the given user and presents them.
-   * @param user The authenticated user account.
-   * @param userId The user ID to get the addresses of.
-   * @return The list of addresses.
-   */
-  @GetMapping("/{userId}/address")
-  public ResponseEntity<List<Address>> getAddress(
-          @AuthenticationPrincipal LocalUser user, @PathVariable Long userId) {
-    if (!userService.userHasPermissionToUser(user, userId)) {
-      return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+
+
+  @GetMapping("/all")  //FUNZIONA
+  public ResponseEntity<List<LocalUser>> getAll(@AuthenticationPrincipal LocalUser user) {
+    if (user.getRole()) {
+      return ResponseEntity.ok(userService.findAll());
     }
-    return ResponseEntity.ok(addressDAO.findByUser_Id(userId));
+    else
+      return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
   }
 
-  /**
-   * Allows the user to add a new address.
-   * @param user The authenticated user.
-   * @param userId The user id for the new address.
-   * @param address The Address to be added.
-   * @return The saved address.
-   */
-  @PutMapping("/{userId}/address")
-  public ResponseEntity<Address> putAddress(
-      @AuthenticationPrincipal LocalUser user, @PathVariable Long userId,
-      @RequestBody Address address) {
-    if (!userService.userHasPermissionToUser(user, userId)) {
-      return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+
+
+  @GetMapping("/usr/{id}") //FUNZIONA
+  public ResponseEntity<LocalUser> getUser(@AuthenticationPrincipal LocalUser user,@PathVariable Long id) {
+    if (user.getRole()) {
+        return ResponseEntity.ok(userService.findById(id));
     }
-    address.setId(null);
-    LocalUser refUser = new LocalUser();
-    refUser.setId(userId);
-    address.setUser(refUser);
-    Address savedAddress = addressDAO.save(address);
-    simpMessagingTemplate.convertAndSend("/topic/user/" + userId + "/address",
-        new DataChange<>(DataChange.ChangeType.INSERT, address));
-    return ResponseEntity.ok(savedAddress);
+    else
+      return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
   }
 
-  /**
-   * Updates the given address.
-   * @param user The authenticated user.
-   * @param userId The user ID the address belongs to.
-   * @param addressId The address ID to alter.
-   * @param address The updated address object.
-   * @return The saved address object.
-   */
-  @PatchMapping("/{userId}/address/{addressId}")
-  public ResponseEntity<Address> patchAddress(
-      @AuthenticationPrincipal LocalUser user, @PathVariable Long userId,
-      @PathVariable Long addressId, @RequestBody Address address) {
-    if (!userService.userHasPermissionToUser(user, userId)) {
+
+
+  @PostMapping("/del")//FUNZIONA
+  public ResponseEntity<LocalUser> del(@AuthenticationPrincipal LocalUser user,@RequestBody LocalUser usr) {
+    if (user.getRole()) {
+      localUserDAO.delete(usr);
+      return ResponseEntity.status(HttpStatus.OK).build();
+    }
+    else
       return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-    }
-    if (address.getId() == addressId) {
-      Optional<Address> opOriginalAddress = addressDAO.findById(addressId);
-      if (opOriginalAddress.isPresent()) {
-        LocalUser originalUser = opOriginalAddress.get().getUser();
-        if (originalUser.getId() == userId) {
-          address.setUser(originalUser);
-          Address savedAddress = addressDAO.save(address);
-          simpMessagingTemplate.convertAndSend("/topic/user/" + userId + "/address",
-              new DataChange<>(DataChange.ChangeType.UPDATE, address));
-          return ResponseEntity.ok(savedAddress);
-        }
-      }
-    }
-    return ResponseEntity.badRequest().build();
   }
 
 }
