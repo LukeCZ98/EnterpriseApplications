@@ -1,6 +1,8 @@
 package com.unical.amazing.view.home
 
 import android.annotation.SuppressLint
+import android.content.Context
+import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
@@ -47,23 +49,38 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import com.unical.amazing.viewmodel.home.HomeViewModel
 import coil.compose.rememberAsyncImagePainter
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.unical.amazing.swagger.models.WishlistDto
+import com.unical.amazing.viewmodel.account.WishlistViewModel
+import com.unical.amazing.viewmodel.account.WishlistViewModelFactory
 
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun HomeView(viewModel: HomeViewModel, navController: NavController) {
+fun HomeView(viewModel: HomeViewModel, navController: NavController,context:Context) {
+    val viewModelFactory = remember { WishlistViewModelFactory(context) }
+    val wishlistViewModel: WishlistViewModel = viewModel(factory = viewModelFactory)
+    val wishlists by wishlistViewModel.wishlists.collectAsState()
+
     Scaffold(
         topBar = { SearchBar(navController = navController) },
         content = { paddingValues ->
-            ProductList(
-                products = viewModel.productList,
-                navController = navController,
-                modifier = Modifier.padding(paddingValues)
-            )
+            wishlists?.let {
+                ProductList(
+                    products = viewModel.productList,
+                    navController = navController,
+                    modifier = Modifier.padding(paddingValues),
+                    it,
+                    wishlistViewModel
+                )
+            }
         }
     )
 }
@@ -123,7 +140,9 @@ fun SearchBar(navController: NavController) {
 fun ProductList(
     products: List<ProductDto>,
     navController: NavController,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    wishlists: List<WishlistDto?>,
+    wishlistViewModel: WishlistViewModel
 ) {
     val visible by remember { mutableStateOf(true) }
 
@@ -143,7 +162,7 @@ fun ProductList(
                     enter = androidx.compose.animation.fadeIn(animationSpec = tween(durationMillis = 1000)),
                     exit = androidx.compose.animation.fadeOut(animationSpec = tween(durationMillis = 1000))
                 ) {
-                    ProductItem(product, navController)
+                    ProductItem(product, navController,wishlists,wishlistViewModel)
                 }
             }
 
@@ -177,15 +196,14 @@ fun ProductList(
 
 
 @Composable
-fun ProductItem(product: ProductDto, navController: NavController) {
+fun ProductItem(product: ProductDto, navController: NavController,wishl: List<WishlistDto?>,wishlistViewModel: WishlistViewModel) {
     var showDialog by remember { mutableStateOf(false) }
     var selectedWishlist by remember { mutableStateOf<String?>(null) }
-    val wishlists = listOf("Wishlist 1", "Wishlist 2", "Wishlist 3") // Example wishlist names
-    val alreadyInWishlist = remember { mutableStateOf(false) } // This should be based on actual data
-
+    val wishlists by wishlistViewModel.wishlists.collectAsState() // Example wishlist names
+    var showToast by remember { mutableStateOf(false) }
     // Dummy check for product already in wishlist
     // This should be replaced with actual logic to check if the product is in any wishlist
-    alreadyInWishlist.value = checkIfProductInWishlist(product)
+
 
     Card(
         modifier = Modifier
@@ -233,21 +251,12 @@ fun ProductItem(product: ProductDto, navController: NavController) {
                     color = Color.White
                 )
             }
-
-            if (!alreadyInWishlist.value) {
                 Button(
                     onClick = { showDialog = true },
                     modifier = Modifier.padding(top = 8.dp)
                 ) {
                     Text("Add to Wishlist")
                 }
-            } else {
-                Text(
-                    text = "Already in Wishlist",
-                    color = Color.Red,
-                    modifier = Modifier.padding(top = 8.dp)
-                )
-            }
         }
     }
 
@@ -257,19 +266,21 @@ fun ProductItem(product: ProductDto, navController: NavController) {
             title = { Text(text = "Select Wishlist") },
             text = {
                 Column {
-                    wishlists.forEach { wishlist ->
+                    wishlists?.forEach { wishlist ->
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .clickable {
-                                    selectedWishlist = wishlist
-                                    addProductToWishlist(product, wishlist)
+                                    selectedWishlist = wishlist.name
+                                    val productAdded = addProductToWishlist(product, wishlist.name,wishl,wishlistViewModel)
+                                    if(!productAdded)
+                                        showToast = true
                                     showDialog = false
                                 }
                                 .padding(8.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Text(text = wishlist)
+                            Text(text = wishlist.name)
                         }
                     }
                 }
@@ -281,13 +292,36 @@ fun ProductItem(product: ProductDto, navController: NavController) {
             }
         )
     }
+    val context = LocalContext.current
+    LaunchedEffect(showToast) {
+        if (showToast) {
+            Toast.makeText(context, "Product is already in the wishlist", Toast.LENGTH_SHORT).show()
+            showToast = false
+        }
+    }
 }
 
-fun checkIfProductInWishlist(product: ProductDto): Boolean {
-    // Replace with actual logic to check if the product is in any wishlist
+fun checkIfProductInWishlist(product: ProductDto,wishlists: List<WishlistDto?>): Boolean {
+    for(Wishlist in wishlists){
+        if (Wishlist != null) {
+            if (Wishlist.items?.contains(product) == true) {
+                return true
+            }
+        }
+    }
     return false
 }
 
-fun addProductToWishlist(product: ProductDto, wishlist: String) {
-    // Replace with actual logic to add the product to the selected wishlist
+fun addProductToWishlist(product: ProductDto, wishlist: String,wishlists: List<WishlistDto?>,wishlistViewModel: WishlistViewModel):Boolean {
+    for(Wishlist in wishlists){
+        if (Wishlist != null) {
+            if (Wishlist.name == wishlist) {
+                if(Wishlist.items?.contains(product) == false){
+                    product.id?.let { wishlistViewModel.addProductToWishlist(it, Wishlist.id) }
+                    return true
+                }
+            }
+        }
+    }
+    return false
 }

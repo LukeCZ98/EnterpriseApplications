@@ -59,7 +59,7 @@ class OrderApi(context: Context, // Aggiungi il Context come parametro
         val headers = mapOf("Authorization" to "Bearer $token")
         val localVariableConfig = RequestConfig(
             RequestMethod.GET,
-            "/orders",
+            "/orders/all",
             headers = headers
         )
         val response = request<List<Map<String, Any?>>>(

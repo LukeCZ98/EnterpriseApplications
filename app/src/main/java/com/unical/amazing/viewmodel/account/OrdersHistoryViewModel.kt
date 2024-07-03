@@ -27,7 +27,6 @@ class OrdersHistoryViewModel(context: Context) : ViewModel() {
         .addLast(KotlinJsonAdapterFactory())
         .build()
 
-    private val orderDtoAdapter: JsonAdapter<OrderDto> = moshi.adapter(OrderDto::class.java)
     private val productDtoAdapter: JsonAdapter<ProductDto> = moshi.adapter(ProductDto::class.java)
 
     init {

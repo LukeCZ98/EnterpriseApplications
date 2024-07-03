@@ -35,7 +35,7 @@ fun AccountView(onLogout: () -> Unit) {
                 OrdersHistoryScreen(context)
             }
             composable("wishlist") {
-                WishlistScreen()
+                WishlistScreen(context)
             }
         }
     }

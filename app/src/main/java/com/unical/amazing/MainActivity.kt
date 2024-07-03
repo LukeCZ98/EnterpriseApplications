@@ -51,6 +51,8 @@ class MainActivity : ComponentActivity() {
             val isLoggedIn = rememberSaveable { mutableStateOf(checkLoginStatus()) }
 
 
+            //TODO nascondere password certificato e sistemare problema controllo certificati,rimuovere il bypass per security 
+
             /*
             * mettiamo if controllo admin user sui ruoli restituiti dal server
             * insieme al token e verifichiamo se mandare o utente su navhost utente
@@ -68,7 +70,7 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colors.background
                 ) {
                     if (isLoggedIn.value) {
-                        MainNavHost(mainNavController, viewmodel){
+                        MainNavHost(context,mainNavController, viewmodel){
                             logout(isLoggedIn)
                         }
                     } else {
@@ -124,13 +126,13 @@ fun AuthNavHost(
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
-fun MainNavHost(mainNavController: NavHostController, viewmodel: HomeViewModel, onLogout: () -> Unit) {
+fun MainNavHost(context: Context,mainNavController: NavHostController, viewmodel: HomeViewModel, onLogout: () -> Unit) {
     Scaffold(
         bottomBar = { NavBar(mainNavController) }
     ) {
         NavHost(mainNavController, startDestination = "home") {
             composable("home") {
-                HomeView(viewmodel, mainNavController)
+                HomeView(viewmodel, mainNavController,context)
             }
             composable("account") {
                 AccountView(onLogout)
@@ -147,7 +149,7 @@ fun MainNavHost(mainNavController: NavHostController, viewmodel: HomeViewModel, 
             }
             composable("searchResults/{query}") { backStackEntry ->
                 val query = backStackEntry.arguments?.getString("query") ?: ""
-                SearchResultsView(viewmodel, mainNavController, query)
+                SearchResultsView(viewmodel, mainNavController, query,context)
             }
         }
     }

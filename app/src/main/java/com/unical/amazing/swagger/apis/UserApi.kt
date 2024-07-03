@@ -20,10 +20,7 @@ import io.swagger.client.models.UserDto
 import io.swagger.client.infrastructure.*
 import okhttp3.*
 import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
 import okhttp3.MediaType.Companion.toMediaType
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
-import java.io.FileInputStream
 import java.io.IOException
 import java.security.KeyStore
 import javax.net.ssl.SSLContext
@@ -65,14 +62,14 @@ class UserApi(context: Context, // Aggiungi il Context come parametro
     /**
      * this is the list of user
      * Get endpoint for user
-     * @param email  
+     * @param nick
      * @return UserDto
      */
     @Suppress("UNCHECKED_CAST")
-    fun findByEmail(email: kotlin.String): UserDto {
+    fun findBynick(nick: kotlin.String): UserDto {
         val localVariableConfig = RequestConfig(
                 RequestMethod.GET,
-                "/v1/users/{email}".replace("{" + "email" + "}", "$email")
+                "/user/usr/{nick}".replace("{" + "nick" + "}", nick)
         )
         val response = request<UserDto>(
                 localVariableConfig
