@@ -27,11 +27,13 @@ class ProductApi(
      * @return ProductDto
      */
     @Suppress("UNCHECKED_CAST")
-    fun addProduct(body: ProductDto): ProductDto {
-        val localVariableBody: kotlin.Any? = body
+    fun addProduct(token: String, body: ProductDto): ProductDto {
+        val localVariableBody: Any = body
+        val headers = mapOf("Authorization" to "Bearer $token")
         val localVariableConfig = RequestConfig(
                 RequestMethod.POST,
-                "/v1/products"
+                "/product/add",
+                headers = headers
         )
         val response = request<ProductDto>(
                 localVariableConfig, localVariableBody
@@ -45,19 +47,19 @@ class ProductApi(
             ResponseType.ServerError -> throw ServerException((response as ServerError<*>).message ?: "Server error")
         }
     }
-    /**
-     * 
-     * 
-     * @param productId  
-     * @return void
-     */
-    fun deleteProduct(productId: kotlin.Long): Unit {
+
+
+
+    fun deleteProduct(token: String, body: ProductDto): Any {
+        val localVariableBody: Any = body
+        val headers = mapOf("Authorization" to "Bearer $token")
         val localVariableConfig = RequestConfig(
-                RequestMethod.DELETE,
-                "/v1/products/{productId}".replace("{" + "productId" + "}", "$productId")
+                RequestMethod.POST,
+                "/product/delete",
+                headers = headers
         )
         val response = request<Any?>(
-                localVariableConfig
+                localVariableConfig,localVariableBody
         )
 
         return when (response.responseType) {
@@ -68,12 +70,31 @@ class ProductApi(
             ResponseType.ServerError -> throw ServerException((response as ServerError<*>).message ?: "Server error")
         }
     }
-    /**
-     * 
-     * 
-     * @param title  
-     * @return kotlin.Array<ProductDto>
-     */
+
+
+
+
+    fun updateProduct(token: String, body: ProductDto): Any {
+        val localVariableBody: Any = body
+        val headers = mapOf("Authorization" to "Bearer $token")
+        val localVariableConfig = RequestConfig(
+            RequestMethod.POST,
+            "/product/update",
+            headers = headers
+        )
+        val response = request<Any?>(
+            localVariableConfig,localVariableBody
+        )
+
+        return when (response.responseType) {
+            ResponseType.Success -> Unit
+            ResponseType.Informational -> TODO()
+            ResponseType.Redirection -> TODO()
+            ResponseType.ClientError -> throw ClientException((response as ClientError<*>).body as? String ?: "Client error")
+            ResponseType.ServerError -> throw ServerException((response as ServerError<*>).message ?: "Server error")
+        }
+    }
+
 
 
 

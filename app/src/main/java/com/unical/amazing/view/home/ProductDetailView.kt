@@ -94,6 +94,7 @@ fun ProductDetailView(product: ProductDto, cartManager: CartManager) {
                     Spacer(modifier = Modifier.height(16.dp))
                 }
 
+            if(product.available==true){
                 Button(
                     onClick = {
                         coroutineScope.launch {
@@ -109,6 +110,11 @@ fun ProductDetailView(product: ProductDto, cartManager: CartManager) {
                     )
                 ) {
                     Text(text = "Aggiungi al carrello")
+                }
+            }
+                else{
+                Text(text = "Non disponibile",
+                     color = Color.Red)
                 }
             }
         }

@@ -1,5 +1,6 @@
 package com.unical.amazing
 
+import AddProductScreen
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.SharedPreferences
@@ -19,19 +20,29 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.vectorResource
 import androidx.core.view.WindowCompat
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.unical.amazing.theme.AmazingTheme
 import com.unical.amazing.view.account.AccountView
+import com.unical.amazing.view.admin.AdminView
+import com.unical.amazing.view.admin.EditProductView
+import com.unical.amazing.view.admin.ProductManagementView
+import com.unical.amazing.viewmodel.admin.product.SharedProductViewModel
 import com.unical.amazing.view.auth.AuthScreen
 import com.unical.amazing.view.cart.CartView
 import com.unical.amazing.view.home.ProductDetailView
 import com.unical.amazing.view.home.HomeView
 import com.unical.amazing.view.home.SearchResultsView
+import com.unical.amazing.viewmodel.admin.product.ProductViewModel
+import com.unical.amazing.viewmodel.auth.AuthViewModel
 import com.unical.amazing.viewmodel.cart.CartManager
+import com.unical.amazing.viewmodel.factories.ProductManagementViewModelFactory
 import com.unical.amazing.viewmodel.home.HomeViewModel
 
 class MainActivity : ComponentActivity() {
@@ -50,22 +61,21 @@ class MainActivity : ComponentActivity() {
             val context: Context = LocalContext.current
             val authNavController = rememberNavController()
             val mainNavController = rememberNavController()
+            val adminNavController = rememberNavController()
             val viewmodel = remember { HomeViewModel(context) }
+            val sharedProductViewModel: SharedProductViewModel = viewModel()
+
             val isLoggedIn = rememberSaveable { mutableStateOf(checkLoginStatus()) }
+            val isAdmin = rememberSaveable { mutableStateOf(false) }
 
-
-            //TODO nascondere password certificato e sistemare problema controllo certificati,rimuovere il bypass per security 
-
-            /*
-            * mettiamo if controllo admin user sui ruoli restituiti dal server
-            * insieme al token e verifichiamo se mandare o utente su navhost utente
-            * oppure admin su navhost admin nuovo navhost admin da creare e collegare
-            * con gerarchia ecc
-            * per controllare se admin impostare un valore stato cosi che quando cambia viene effettuata
-            * la scelta navhost
-            * */
-
-
+            // Effetto colaterale per aggiornare isAdmin quando isLoggedIn cambia
+            LaunchedEffect(isLoggedIn.value) {
+                if (isLoggedIn.value) {
+                    isAdmin.value = checkAdminStatus(context)
+                } else {
+                    isAdmin.value = false
+                }
+            }
 
             AmazingTheme {
                 Surface(
@@ -73,14 +83,19 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colors.background
                 ) {
                     if (isLoggedIn.value) {
-                        MainNavHost(cartManager,context,mainNavController, viewmodel){
-                            logout(isLoggedIn)
+                        if (isAdmin.value) {
+                            AdminNavHost(context,adminNavController,sharedProductViewModel) {
+                                logout(isLoggedIn)
+                            }
+                        } else {
+                            MainNavHost(cartManager, context, mainNavController, viewmodel) {
+                                logout(isLoggedIn)
+                            }
                         }
                     } else {
-                        AuthNavHost(authNavController,isLoggedIn) { username, password, email, firstName, lastName ->
+                        AuthNavHost(authNavController, isLoggedIn) { username, password, email, firstName, lastName ->
                             register(username, password, email, firstName, lastName, isLoggedIn)
                         }
-
                     }
                 }
             }
@@ -93,11 +108,13 @@ class MainActivity : ComponentActivity() {
         return !username.isNullOrEmpty() && !password.isNullOrEmpty()
     }
 
-    private fun register(username: String, password: String, email: String, firstName: String, lastName: String, isLoggedIn: MutableState<Boolean>) {
-        // Simulate registration and save the credentials
-
+    private fun checkAdminStatus(context: Context): Boolean {
+        return AuthViewModel(context).getRole()
     }
 
+    private fun register(username: String, password: String, email: String, firstName: String, lastName: String, isLoggedIn: MutableState<Boolean>) {
+        // Simulate registration and save the credentials
+    }
 
     private fun logout(isLoggedIn: MutableState<Boolean>) {
         with(sharedPreferences.edit()) {
@@ -107,7 +124,6 @@ class MainActivity : ComponentActivity() {
         isLoggedIn.value = false
         recreate()
     }
-
 }
 
 @Composable
@@ -118,14 +134,11 @@ fun AuthNavHost(
 ) {
     NavHost(authNavController, startDestination = "login") {
         composable("login") {
-            AuthScreen(authNavController,isLoggedIn, register)
+            AuthScreen(authNavController, isLoggedIn, register)
         }
         // Non è necessario un composable separato per la registrazione se si utilizza una singola schermata
     }
 }
-
-
-
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
@@ -143,7 +156,7 @@ fun MainNavHost(cartManager: CartManager, context: Context, mainNavController: N
                 AccountView(onLogout)
             }
             composable("cart") {
-                CartView(cartManager,context)
+                CartView(cartManager, context)
             }
             composable("productDetail/{productId}") { backStackEntry ->
                 val productId = backStackEntry.arguments?.getString("productId")?.toLongOrNull()
@@ -159,6 +172,33 @@ fun MainNavHost(cartManager: CartManager, context: Context, mainNavController: N
         }
     }
 }
+
+@Composable
+fun AdminNavHost(
+    context: Context,
+    adminNavController: NavHostController,
+    sharedProductViewModel: SharedProductViewModel,
+    onLogout: () -> Unit
+) {
+    val viewModelFactory = remember { ProductManagementViewModelFactory(context) }
+    val viewModel: ProductViewModel = viewModel(factory = viewModelFactory)
+
+    NavHost(adminNavController, startDestination = "adminHome") {
+        composable("adminHome") {
+            AdminView(onLogout, adminNavController)
+        }
+        composable("product") {
+            ProductManagementView(context, adminNavController, sharedProductViewModel)
+        }
+        composable("addproduct") {
+            AddProductScreen(viewModel)
+        }
+        composable("editproduct") {
+            EditProductView(context, adminNavController, sharedProductViewModel)
+        }
+    }
+}
+
 
 
 @Composable
