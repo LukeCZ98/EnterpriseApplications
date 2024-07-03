@@ -76,20 +76,21 @@ public class OrderController {
 
 
   @PostMapping("/checkout") //FUNZIONA
-  public List<WebOrderQuantities> checkout(@AuthenticationPrincipal LocalUser user, @RequestBody List<WebOrderQuantitiesDTO> quantitiesDTO) {
+  public WebOrder checkout(@AuthenticationPrincipal LocalUser user, @RequestBody List<WebOrderQuantitiesDTO> quantitiesDTO) {
     WebOrder order = new WebOrder();
     order.setUser(user);
     order.setAddress(user.getAddresses().get(0));
-    WebOrder ord = orderService.addOrder(order);
+//    WebOrder ord = orderService.addOrder(order);
 
     List<WebOrderQuantities> quantities = new ArrayList<>();
     for (WebOrderQuantitiesDTO quantityDTO : quantitiesDTO) {
+      System.out.println(quantityDTO.getProductId());
       WebOrderQuantities quantity = webOrderQuantitiesMapper.toEntity(quantityDTO);
-      quantity.setOrder(ord);
+      quantity.setOrder(order);
       quantities.add(quantity);
     }
-
-    return orderService.addQuantities(quantities);
+    order.setQuantities(quantities);
+    return orderService.addOrder(order);
   }
 
 
