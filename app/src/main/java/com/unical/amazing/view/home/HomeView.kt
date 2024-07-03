@@ -42,6 +42,9 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.material.TextButton
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import com.unical.amazing.viewmodel.home.HomeViewModel
@@ -175,6 +178,15 @@ fun ProductList(
 
 @Composable
 fun ProductItem(product: ProductDto, navController: NavController) {
+    var showDialog by remember { mutableStateOf(false) }
+    var selectedWishlist by remember { mutableStateOf<String?>(null) }
+    val wishlists = listOf("Wishlist 1", "Wishlist 2", "Wishlist 3") // Example wishlist names
+    val alreadyInWishlist = remember { mutableStateOf(false) } // This should be based on actual data
+
+    // Dummy check for product already in wishlist
+    // This should be replaced with actual logic to check if the product is in any wishlist
+    alreadyInWishlist.value = checkIfProductInWishlist(product)
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -214,23 +226,68 @@ fun ProductItem(product: ProductDto, navController: NavController) {
 
             Spacer(modifier = Modifier.height(4.dp))
 
-            product.price?.let {
+            product.price.let {
                 Text(
                     text = "€ $it",
                     fontSize = 16.sp,
                     color = Color.White
                 )
             }
+
+            if (!alreadyInWishlist.value) {
+                Button(
+                    onClick = { showDialog = true },
+                    modifier = Modifier.padding(top = 8.dp)
+                ) {
+                    Text("Add to Wishlist")
+                }
+            } else {
+                Text(
+                    text = "Already in Wishlist",
+                    color = Color.Red,
+                    modifier = Modifier.padding(top = 8.dp)
+                )
+            }
         }
+    }
+
+    if (showDialog) {
+        AlertDialog(
+            onDismissRequest = { showDialog = false },
+            title = { Text(text = "Select Wishlist") },
+            text = {
+                Column {
+                    wishlists.forEach { wishlist ->
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable {
+                                    selectedWishlist = wishlist
+                                    addProductToWishlist(product, wishlist)
+                                    showDialog = false
+                                }
+                                .padding(8.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(text = wishlist)
+                        }
+                    }
+                }
+            },
+            confirmButton = {
+                TextButton(onClick = { showDialog = false }) {
+                    Text("Cancel")
+                }
+            }
+        )
     }
 }
 
+fun checkIfProductInWishlist(product: ProductDto): Boolean {
+    // Replace with actual logic to check if the product is in any wishlist
+    return false
+}
 
-
-
-
-
-
-
-
-
+fun addProductToWishlist(product: ProductDto, wishlist: String) {
+    // Replace with actual logic to add the product to the selected wishlist
+}
