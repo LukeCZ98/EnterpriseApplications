@@ -67,6 +67,7 @@ public class AuthenticationController {
   @PostMapping("/login")
   public ResponseEntity<LoginResponse> loginUser(@Valid @RequestBody LoginBody loginBody) {
     String jwt = null;
+    Boolean role = false;
     try {
       jwt = userService.loginUser(loginBody);
     } catch (UserNotVerifiedException ex) {
@@ -84,9 +85,11 @@ public class AuthenticationController {
     if (jwt == null) {
       return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
     } else {
+      role = userService.findByuser(loginBody.getUsername()).getRole();
       LoginResponse response = new LoginResponse();
       response.setJwt(jwt);
       response.setSuccess(true);
+      response.setRole(role);
       return ResponseEntity.ok(response);
     }
   }

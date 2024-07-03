@@ -12,6 +12,8 @@ public class LoginResponse {
   /** The reason for failure on login. */
   private String failureReason;
 
+  private Boolean role;
+
   public String getJwt() {
     return jwt;
   }
@@ -34,6 +36,13 @@ public class LoginResponse {
 
   public void setFailureReason(String failureReason) {
     this.failureReason = failureReason;
+  }
+
+  public Boolean getRole() {
+    return role;
+  }
+  public void setRole(Boolean role) {
+    this.role = role;
   }
 
 }
