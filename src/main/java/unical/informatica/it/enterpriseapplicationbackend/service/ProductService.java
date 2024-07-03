@@ -66,7 +66,7 @@ public class ProductService {
    * @return The list of products.
    */
   public List<Product> getProducts() {
-    return productDAO.findByAvailableTrue();
+    return productDAO.findAll();
   }
 
   public List<Product> getProdsbyname(String name) {
