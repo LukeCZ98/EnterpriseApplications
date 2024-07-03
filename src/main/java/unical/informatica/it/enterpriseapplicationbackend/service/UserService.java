@@ -213,6 +213,9 @@ public class UserService {
     return localUserDAO.findAll();
   }
 
+  public LocalUser findByuser(String user) {
+    return localUserDAO.findByUsernameIgnoreCase(user).get();
+  }
 
   public LocalUser findById(Long id) {
     return localUserDAO.findById(id).get();

@@ -32,7 +32,7 @@ public class WishlistMapper {
         dto.setVisibility(wishlist.getVisibility().name());
 //        dto.setUser(wishlist.getUser());
         dto.setItems(wishlist.getItems());
-        dto.setSharedWith(wishlist.getSharedWith());
+//        dto.setSharedWith(wishlist.getSharedWith());
         return dto;
     }
 
@@ -44,8 +44,8 @@ public class WishlistMapper {
 //        wishlist.setUser(localUserService.findById(dto.getUser().getId()));
         List<Product> products = dto.getItems().stream().map(product -> productService.findById(product.getId())).collect(Collectors.toList());
         wishlist.setItems(products);
-        List<LocalUser> sharedUsers = dto.getSharedWith().stream().map(user -> localUserService.findById(user.getId())).collect(Collectors.toList());
-        wishlist.setSharedWith(sharedUsers);
+//        List<LocalUser> sharedUsers = dto.getSharedWith().stream().map(user -> localUserService.findById(user.getId())).collect(Collectors.toList());
+//        wishlist.setSharedWith(sharedUsers);
         return wishlist;
     }
 }

@@ -1,17 +1,15 @@
 package unical.informatica.it.enterpriseapplicationbackend.model.dto;
 
 import unical.informatica.it.enterpriseapplicationbackend.model.Product;
-import unical.informatica.it.enterpriseapplicationbackend.model.LocalUser;
+import unical.informatica.it.enterpriseapplicationbackend.model.Visibility;
 
 import java.util.List;
 
-public class WishlistDTO {
+public class WishlistResponseDTO {
     private Long id;
     private String name;
-    private String visibility;
-//    private LocalUser user;
+    private Visibility visibility;
     private List<Product> items;
-//    private List<LocalUser> sharedWith;
 
     // Getters and Setters
     public Long getId() {
@@ -30,21 +28,13 @@ public class WishlistDTO {
         this.name = name;
     }
 
-    public String getVisibility() {
+    public Visibility getVisibility() {
         return visibility;
     }
 
-    public void setVisibility(String visibility) {
+    public void setVisibility(Visibility visibility) {
         this.visibility = visibility;
     }
-
-//    public LocalUser getUser() {
-//        return user;
-//    }
-//
-//    public void setUser(LocalUser user) {
-//        this.user = user;
-//    }
 
     public List<Product> getItems() {
         return items;
@@ -53,12 +43,4 @@ public class WishlistDTO {
     public void setItems(List<Product> items) {
         this.items = items;
     }
-
-//    public List<LocalUser> getSharedWith() {
-//        return sharedWith;
-//    }
-//
-//    public void setSharedWith(List<LocalUser> sharedWith) {
-//        this.sharedWith = sharedWith;
-//    }
 }

@@ -50,12 +50,16 @@ public class WishlistService {
         }
         Wishlist updatedWishlist = existingWishlist.get();
         updatedWishlist.setName(wishlist.getName());
+        System.out.println(wishlist.getVisibility());
+        updatedWishlist.setVisibility(wishlist.getVisibility());
         updatedWishlist.setItems(wishlist.getItems());
+        updatedWishlist.setSharedWith(wishlist.getSharedWith());
+        System.out.println(wishlist.getSharedWith().isEmpty());
         return wishlistDAO.save(updatedWishlist);
     }
 
-    public List<Wishlist> findPublicWishlists() {
-        return wishlistDAO.findByIsPublic();
+    public List<Wishlist> findPublicWishlists(LocalUser user) {
+        return wishlistDAO.findByIsPublic(user);
     }
 
 }

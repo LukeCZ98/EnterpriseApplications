@@ -61,11 +61,8 @@ public class OrderController {
    * @return The list of orders the user had made.
    */
   @GetMapping("/all") //FUNZIONA
-  public List<WebOrderDTO> getOrders(@AuthenticationPrincipal LocalUser user) {
-    List<WebOrder> orders = user.getRole() ? orderService.getAll() : orderService.getOrders(user);
-    return orders.stream()
-            .map(WebOrderMapper::toDTO)
-            .collect(Collectors.toList());
+  public List<WebOrder> getOrders(@AuthenticationPrincipal LocalUser user) {
+      return user.getRole() ? orderService.getAll() : orderService.getOrders(user);
   }
 
 

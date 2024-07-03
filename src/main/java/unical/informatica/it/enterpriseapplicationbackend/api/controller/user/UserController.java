@@ -65,6 +65,11 @@ public class UserController {
   }
 
 
+  @GetMapping("/usr/{username}") //FUNZIONA
+  public ResponseEntity<Long> getid(@AuthenticationPrincipal LocalUser user,@PathVariable String username) {
+    return ResponseEntity.ok(userService.findByuser(username).getId());
+  }
+
 
   @PostMapping("/del")//FUNZIONA
   public ResponseEntity<LocalUser> del(@AuthenticationPrincipal LocalUser user,@RequestBody LocalUser usr) {

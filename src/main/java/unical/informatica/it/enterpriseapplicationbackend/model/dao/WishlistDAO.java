@@ -13,8 +13,8 @@ import java.util.List;
 public interface WishlistDAO extends ListCrudRepository<Wishlist, Long> {
     List<Wishlist> findByUser(LocalUser user);
 
-    @Query("select w from Wishlist w where w.visibility = 'PUBLIC'")
-    List<Wishlist> findByIsPublic();
+    @Query("select w from Wishlist w where w.visibility = 'PUBLIC' and w.user!=?1")
+    List<Wishlist> findByIsPublic(LocalUser user);
 
     List<Wishlist> findBySharedWith(LocalUser sharedWith);
 
