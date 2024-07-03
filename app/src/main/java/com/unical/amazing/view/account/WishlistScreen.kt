@@ -7,7 +7,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -19,7 +18,7 @@ import com.unical.amazing.swagger.models.ProductDto
 import com.unical.amazing.swagger.models.UserWDto
 import com.unical.amazing.swagger.models.WishlistDto
 import com.unical.amazing.viewmodel.account.WishlistViewModel
-import com.unical.amazing.viewmodel.account.WishlistViewModelFactory
+import com.unical.amazing.viewmodel.factories.WishlistViewModelFactory
 
 @Composable
 fun WishlistScreen(context: Context) {

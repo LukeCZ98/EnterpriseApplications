@@ -101,12 +101,14 @@ dependencies {
     // Kotlinx serialization
     implementation(libs.kotlinx.serialization.json)
     implementation (libs.androidx.lifecycle.viewmodel.ktx)
-    implementation("com.jakewharton.timber:timber:4.7.1")
-
+    implementation(libs.timber)
+    implementation (libs.androidx.datastore.preferences)
     implementation(libs.okhttp.v493)
     implementation(libs.kotlinx.serialization.json.v132)
     implementation (libs.bcprov.jdk15on)
-
+    implementation (libs.androidx.material.icons.core)
+    implementation (libs.androidx.material.icons.extended)
+    implementation(libs.androidx.lifecycle.runtime.compose.android)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

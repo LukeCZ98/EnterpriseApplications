@@ -1,4 +1,4 @@
-package com.unical.amazing.view.cart
+package com.unical.amazing.view.home
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
@@ -17,15 +17,17 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import coil.compose.rememberAsyncImagePainter
 import com.unical.amazing.swagger.models.ProductDto
-
-
+import com.unical.amazing.swagger.models.ProductWithQuantity
+import com.unical.amazing.viewmodel.cart.CartManager
+import kotlinx.coroutines.launch
 
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ProductDetailView(product: ProductDto) {
+fun ProductDetailView(product: ProductDto, cartManager: CartManager) {
     var showDialog by remember { mutableStateOf(false) }
+    val coroutineScope = rememberCoroutineScope()
 
     Scaffold(
         topBar = {
@@ -43,8 +45,8 @@ fun ProductDetailView(product: ProductDto) {
                     .fillMaxSize()
                     .background(Color.White)
                     .verticalScroll(rememberScrollState())
-                    .padding(paddingValues) // Use paddingValues to avoid content being cut off
-                    .padding(16.dp) // Add additional padding if needed
+                    .padding(paddingValues)
+                    .padding(16.dp)
             ) {
                 product.img_url?.let { imageUrl ->
                     Image(
@@ -74,7 +76,7 @@ fun ProductDetailView(product: ProductDto) {
                     Spacer(modifier = Modifier.height(8.dp))
                 }
 
-                product.price?.let {
+                product.price.let {
                     Text(
                         text = "€ $it",
                         fontSize = 20.sp,
@@ -93,19 +95,27 @@ fun ProductDetailView(product: ProductDto) {
                 }
 
                 Button(
-                    onClick = { /* Handle add to cart */ },
+                    onClick = {
+                        coroutineScope.launch {
+                            val prod = ProductDto(product.id, product.title, product.price, product.description, true, product.img_url)
+                            cartManager.addItemToCart(ProductWithQuantity(prod, 1))
+                            println("Added to cart: ${product.title}")
+                        }
+                    },
                     modifier = Modifier.fillMaxWidth(),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = Color(0xFF6200EE),
                         contentColor = Color.White
                     )
                 ) {
-                    Text(text = "Add to Cart")
+                    Text(text = "Aggiungi al carrello")
                 }
             }
         }
     )
 }
+
+
 
 
 

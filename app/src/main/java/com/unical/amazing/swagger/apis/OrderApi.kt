@@ -14,6 +14,7 @@ package io.swagger.client.apis
 import android.content.Context
 import com.unical.amazing.R
 import com.unical.amazing.model.settings.HOST_URL
+import com.unical.amazing.swagger.models.CheckoutDto
 import com.unical.amazing.swagger.models.OrderDto
 
 import io.swagger.client.infrastructure.*
@@ -30,11 +31,13 @@ class OrderApi(context: Context, // Aggiungi il Context come parametro
      * @return OrderDto
      */
     @Suppress("UNCHECKED_CAST")
-    fun addOrder(body: OrderDto): OrderDto {
-        val localVariableBody: kotlin.Any? = body
+    fun checkout(token: String,body: List<CheckoutDto>): Any {
+        val headers = mapOf("Authorization" to "Bearer $token")
+        val localVariableBody: Any = body
         val localVariableConfig = RequestConfig(
                 RequestMethod.POST,
-                "/v1/orders"
+                "/orders/checkout",
+                headers = headers
         )
         val response = request<OrderDto>(
                 localVariableConfig, localVariableBody
@@ -48,6 +51,7 @@ class OrderApi(context: Context, // Aggiungi il Context come parametro
             ResponseType.ServerError -> throw ServerException((response as ServerError<*>).message ?: "Server error")
         }
     }
+
     /**
      * 
      * 

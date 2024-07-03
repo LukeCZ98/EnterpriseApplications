@@ -11,7 +11,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.unical.amazing.swagger.models.OrderDto
 import com.unical.amazing.swagger.models.ProductDto
 import com.unical.amazing.viewmodel.account.OrdersHistoryViewModel
-import com.unical.amazing.viewmodel.account.OrdersHistoryViewModelFactory
+import com.unical.amazing.viewmodel.factories.OrdersHistoryViewModelFactory
 
 enum class Screen {
     OrdersList,

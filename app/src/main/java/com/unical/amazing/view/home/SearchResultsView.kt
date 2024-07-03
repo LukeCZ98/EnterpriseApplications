@@ -12,7 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.unical.amazing.viewmodel.account.WishlistViewModel
-import com.unical.amazing.viewmodel.account.WishlistViewModelFactory
+import com.unical.amazing.viewmodel.factories.WishlistViewModelFactory
 import com.unical.amazing.viewmodel.home.HomeViewModel
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")

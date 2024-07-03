@@ -28,17 +28,20 @@ import com.unical.amazing.theme.AmazingTheme
 import com.unical.amazing.view.account.AccountView
 import com.unical.amazing.view.auth.AuthScreen
 import com.unical.amazing.view.cart.CartView
-import com.unical.amazing.view.cart.ProductDetailView
+import com.unical.amazing.view.home.ProductDetailView
 import com.unical.amazing.view.home.HomeView
 import com.unical.amazing.view.home.SearchResultsView
+import com.unical.amazing.viewmodel.cart.CartManager
 import com.unical.amazing.viewmodel.home.HomeViewModel
 
 class MainActivity : ComponentActivity() {
     private lateinit var sharedPreferences: SharedPreferences
+    private lateinit var cartManager: CartManager
 
     @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        cartManager = CartManager(applicationContext)
         enableEdgeToEdge()
         WindowCompat.setDecorFitsSystemWindows(window, true)
         sharedPreferences = getSharedPreferences("login_prefs", Context.MODE_PRIVATE)
@@ -70,7 +73,7 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colors.background
                 ) {
                     if (isLoggedIn.value) {
-                        MainNavHost(context,mainNavController, viewmodel){
+                        MainNavHost(cartManager,context,mainNavController, viewmodel){
                             logout(isLoggedIn)
                         }
                     } else {
@@ -126,37 +129,40 @@ fun AuthNavHost(
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
-fun MainNavHost(context: Context,mainNavController: NavHostController, viewmodel: HomeViewModel, onLogout: () -> Unit) {
+fun MainNavHost(cartManager: CartManager, context: Context, mainNavController: NavHostController, viewmodel: HomeViewModel, onLogout: () -> Unit) {
+    val cartItemCount by cartManager.getCartItemCount().collectAsState(initial = 0)
+
     Scaffold(
-        bottomBar = { NavBar(mainNavController) }
+        bottomBar = { NavBar(mainNavController, cartItemCount) }
     ) {
         NavHost(mainNavController, startDestination = "home") {
             composable("home") {
-                HomeView(viewmodel, mainNavController,context)
+                HomeView(viewmodel, mainNavController, context)
             }
             composable("account") {
                 AccountView(onLogout)
             }
             composable("cart") {
-                CartView()
+                CartView(cartManager,context)
             }
             composable("productDetail/{productId}") { backStackEntry ->
                 val productId = backStackEntry.arguments?.getString("productId")?.toLongOrNull()
                 val product = viewmodel.productList.find { it.id == productId }
                 product?.let {
-                    ProductDetailView(it)
+                    ProductDetailView(it, cartManager)
                 }
             }
             composable("searchResults/{query}") { backStackEntry ->
                 val query = backStackEntry.arguments?.getString("query") ?: ""
-                SearchResultsView(viewmodel, mainNavController, query,context)
+                SearchResultsView(viewmodel, mainNavController, query, context)
             }
         }
     }
 }
 
+
 @Composable
-fun NavBar(navController: NavController) {
+fun NavBar(navController: NavController, cartItemCount: Int) {
     data class BottomNavigationItem(
         val title: String,
         val selectedIcon: ImageVector,
@@ -183,8 +189,8 @@ fun NavBar(navController: NavController) {
             title = "Cart",
             selectedIcon = ImageVector.vectorResource(id = R.drawable.shop_sel),
             unselectedIcon = ImageVector.vectorResource(id = R.drawable.shop),
-            cartEmpty = true,
-            badgeCount = 0
+            cartEmpty = cartItemCount == 0,
+            badgeCount = if (cartItemCount > 0) cartItemCount else null
         )
     )
 

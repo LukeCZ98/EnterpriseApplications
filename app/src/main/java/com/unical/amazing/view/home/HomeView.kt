@@ -59,7 +59,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.unical.amazing.swagger.models.WishlistDto
 import com.unical.amazing.viewmodel.account.WishlistViewModel
-import com.unical.amazing.viewmodel.account.WishlistViewModelFactory
+import com.unical.amazing.viewmodel.factories.WishlistViewModelFactory
 
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -295,21 +295,10 @@ fun ProductItem(product: ProductDto, navController: NavController,wishl: List<Wi
     val context = LocalContext.current
     LaunchedEffect(showToast) {
         if (showToast) {
-            Toast.makeText(context, "Product is already in the wishlist", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, "Prodotto giá esistente nella wishlist!", Toast.LENGTH_SHORT).show()
             showToast = false
         }
     }
-}
-
-fun checkIfProductInWishlist(product: ProductDto,wishlists: List<WishlistDto?>): Boolean {
-    for(Wishlist in wishlists){
-        if (Wishlist != null) {
-            if (Wishlist.items?.contains(product) == true) {
-                return true
-            }
-        }
-    }
-    return false
 }
 
 fun addProductToWishlist(product: ProductDto, wishlist: String,wishlists: List<WishlistDto?>,wishlistViewModel: WishlistViewModel):Boolean {
