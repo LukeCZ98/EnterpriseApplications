@@ -6,7 +6,8 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -16,7 +17,7 @@ import java.util.List;
  */
 @Entity
 @Table(name = "local_user")
-@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
+//@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class LocalUser implements UserDetails {
 
   /** Unique id for the user. */
@@ -42,6 +43,7 @@ public class LocalUser implements UserDetails {
   private String lastName;
   /** The addresses associated with the user. */
 //  @JsonIgnore
+  @JsonManagedReference
   @OneToMany(mappedBy = "user",fetch = FetchType.EAGER, cascade = CascadeType.REMOVE, orphanRemoval = true)
   private List<Address> addresses = new ArrayList<>();
   /** Verification tokens sent to the user. */
@@ -50,7 +52,7 @@ public class LocalUser implements UserDetails {
   @OrderBy("id desc")
   private List<VerificationToken> verificationTokens = new ArrayList<>();
   /** Has the users email been verified? */
-
+  @JsonManagedReference
   @OneToMany(mappedBy = "user",fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
   private List<Wishlist> wishlists = new ArrayList<>();
 
@@ -61,6 +63,7 @@ public class LocalUser implements UserDetails {
   @Column (name = "role", nullable = false)
   private Boolean role;
 
+  @JsonBackReference
   @ManyToMany(fetch = FetchType.EAGER, mappedBy = "sharedWith", cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
   private List<Wishlist> sharedWishlists = new ArrayList<>();
 

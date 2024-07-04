@@ -71,10 +71,10 @@ public class UserController {
   }
 
 
-  @PostMapping("/del")//FUNZIONA
-  public ResponseEntity<LocalUser> del(@AuthenticationPrincipal LocalUser user,@RequestBody LocalUser usr) {
+  @GetMapping("/del/{id}")//FUNZIONA
+  public ResponseEntity<LocalUser> del(@AuthenticationPrincipal LocalUser user,@PathVariable Long id) {
     if (user.getRole()) {
-      localUserDAO.delete(usr);
+      localUserDAO.deleteById(id);
       return ResponseEntity.status(HttpStatus.OK).build();
     }
     else

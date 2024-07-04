@@ -67,10 +67,10 @@ public class OrderController {
 
 
 
-  @PostMapping("/del")   //FUNZIONA
-  public void delOrder(@AuthenticationPrincipal LocalUser user, @RequestBody WebOrder order) {
+  @GetMapping("/del/{id}")   //FUNZIONA
+  public void delOrder(@AuthenticationPrincipal LocalUser user, @PathVariable Long id) {
     if(user.getRole())
-      orderService.removeOrder(order);
+      orderService.removeOrder(webOrderDAO.findById(id).get());
   }
 
 
@@ -97,10 +97,10 @@ public class OrderController {
 
 
 
-  @PostMapping("/find") //FUNZIONA
-  public List<WebOrder> findbyuser(@AuthenticationPrincipal LocalUser user, @RequestBody LocalUser usr) {
+  @GetMapping("/find/{id}") //FUNZIONA
+  public List<WebOrder> findbyuser(@AuthenticationPrincipal LocalUser user, @PathVariable Long id) {
     if(user.getRole()){
-        return orderService.getOrders(usr);
+        return orderService.getOrders(userService.findById(id));
     }
     return null;
   }

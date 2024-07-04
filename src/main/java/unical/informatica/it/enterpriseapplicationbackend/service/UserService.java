@@ -210,8 +210,9 @@ public class UserService {
   }
 
   public List<LocalUser> findAll(){
-    return localUserDAO.findAll();
+      return localUserDAO.findAll();
   }
+
 
   public LocalUser findByuser(String user) {
     return localUserDAO.findByUsernameIgnoreCase(user).get();
