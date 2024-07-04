@@ -10,6 +10,7 @@ import okhttp3.*
 import com.google.gson.Gson
 import com.google.gson.JsonParser
 import com.google.gson.JsonSyntaxException
+import com.unical.amazing.model.settings.ConfigHelper
 import okhttp3.MediaType.Companion.toMediaType
 import java.io.IOException
 import java.security.KeyStore
@@ -20,7 +21,7 @@ import javax.net.ssl.X509TrustManager
 
 class UserApi(context: Context,
               basePath: String = "https://$HOST_URL:8443/"
-) : ApiClient(basePath, createSecureClient(context, R.raw.truststore,"progettoea")) {
+) : ApiClient(basePath, createSecureClient(context, R.raw.truststore, ConfigHelper.getTruststorePassword(context))) {
 
     private val Context = context
 

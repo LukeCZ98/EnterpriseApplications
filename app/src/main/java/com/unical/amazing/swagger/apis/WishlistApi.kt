@@ -13,6 +13,7 @@ package io.swagger.client.apis
 
 import android.content.Context
 import com.unical.amazing.R
+import com.unical.amazing.model.settings.ConfigHelper
 import com.unical.amazing.model.settings.HOST_URL
 import com.unical.amazing.swagger.models.WishlistDto
 import com.unical.amazing.swagger.models.WishlistUpdateDTO
@@ -22,7 +23,7 @@ import io.swagger.client.infrastructure.*
 
 class WishlistApi(context: Context, // Aggiungi il Context come parametro
                basePath: String = "https://$HOST_URL:8443/"
-) : ApiClient(basePath, createSecureClient(context, R.raw.truststore,"progettoea")) {
+) : ApiClient(basePath, createSecureClient(context, R.raw.truststore, ConfigHelper.getTruststorePassword(context))) {
 
 
     @Suppress("UNCHECKED_CAST")
