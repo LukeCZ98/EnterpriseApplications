@@ -29,7 +29,7 @@ fun AdminView(onLogout: () -> Unit,adminNavController: NavHostController) {
         }
 
         Button(
-            onClick = { /*aggiungere funzione*/ },
+            onClick = { adminNavController.navigate("users") },
             modifier = Modifier
                 .fillMaxWidth(0.8f)
                 .padding(top = 8.dp) // Add some space between buttons

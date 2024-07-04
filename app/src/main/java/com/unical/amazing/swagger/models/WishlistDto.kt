@@ -1,7 +1,5 @@
 package com.unical.amazing.swagger.models
 
-import io.swagger.client.models.UserDto
-
 
 data class WishlistDto(
     val id: Long,

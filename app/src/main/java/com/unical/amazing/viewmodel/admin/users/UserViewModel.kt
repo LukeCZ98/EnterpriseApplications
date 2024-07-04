@@ -1,45 +1,59 @@
-package com.unical.amazing.viewmodel.account
+package com.unical.amazing.viewmodel.admin.users
 
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.squareup.moshi.JsonAdapter
+import com.squareup.moshi.Moshi
+import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
+import com.unical.amazing.swagger.apis.UserApi
 import com.unical.amazing.swagger.models.OrderDto
 import com.unical.amazing.swagger.models.ProductDto
+import com.unical.amazing.swagger.models.ProductWithQuantity
+import com.unical.amazing.swagger.models.ProductWithQuantityDto
+import com.unical.amazing.swagger.models.UserDto
 import com.unical.amazing.viewmodel.auth.AuthViewModel
-import com.unical.amazing.swagger.apis.OrderApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import com.squareup.moshi.JsonAdapter
-import com.squareup.moshi.Moshi
-import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
-import com.unical.amazing.swagger.models.ProductWithQuantity
-import com.unical.amazing.swagger.models.ProductWithQuantityDto
 
-class OrdersHistoryViewModel(context: Context) : ViewModel() {
-    private val _orders = MutableStateFlow<List<OrderDto>?>(null)
-    val orders: StateFlow<List<OrderDto>?> get() = _orders
-    private val token = AuthViewModel(context).getToken()
-    private val ord = OrderApi(context)
-    private var response: List<Map<String, Any?>>? = null
+class UserViewModel(context: Context) : ViewModel() {
+    private val _users = MutableStateFlow<List<UserDto>?>(null)
+    val users: StateFlow<List<UserDto>?> get() = _users
+
+    private val _userorders = MutableStateFlow<List<OrderDto>?>(null)
+    val userorders: StateFlow<List<OrderDto>?> get() = _userorders
     private val moshi: Moshi = Moshi.Builder()
         .addLast(KotlinJsonAdapterFactory())
         .build()
 
     private val productDtoAdapter: JsonAdapter<ProductDto> = moshi.adapter(ProductDto::class.java)
 
-    init {
-        fetchUsrOrders()
+    private val token = AuthViewModel(context).getToken()
+    private val usr = UserApi(context)
+
+
+    init{
+        fetchAll()
     }
 
-    private fun fetchUsrOrders() {
+    private fun fetchAll() {
         viewModelScope.launch(Dispatchers.IO) {
-            try {
-                response = token?.let { ord.getAllByUser(it) }
-                println("Raw Response: $response")
+            try{
+                _users.value = token?.let { usr.getAll(it) }
+            }
+            catch (e:Exception){
+                e.printStackTrace()
+            }
+        }
+    }
 
-                // Mappa temporanea per raccogliere i prodotti e le quantità per ogni ordine
+
+    fun fetchUserOrders(usrid:String){
+        viewModelScope.launch(Dispatchers.IO) {
+            try{
+                val response = token?.let { usr.getUserOrders(it,usrid.toDouble().toLong()) }
                 val ordersMap = mutableMapOf<Long, MutableList<ProductWithQuantity>>()
 
                 response?.forEach { outerMap ->
@@ -67,18 +81,36 @@ class OrdersHistoryViewModel(context: Context) : ViewModel() {
                         products = productsList.map { ProductWithQuantityDto(it.product, it.quantity) }
                     )
                 }
-
-                println("Mapped OrderDtos: $orderDtos")
-                _orders.value = orderDtos
-            } catch (e: Exception) {
+                _userorders.value = orderDtos
+            }
+            catch(e:Exception){
                 e.printStackTrace()
-                _orders.value = emptyList()
+                _userorders.value = emptyList()
             }
         }
     }
 
 
+    fun deleteUser(userid: String) {
+        viewModelScope.launch(Dispatchers.IO)  {
+            try{
+                token?.let { usr.delUser(it,userid.toDouble().toLong()) }
+            }
+            catch(e:Exception){
+                e.printStackTrace()
+            }
+        }
+    }
 
 
-
+    fun deleteUserOrder(ordid: Long) {
+        viewModelScope.launch(Dispatchers.IO)  {
+            try{
+                token?.let { usr.delUserOrd(it,ordid) }
+            }
+            catch(e:Exception){
+                e.printStackTrace()
+            }
+        }
+    }
 }

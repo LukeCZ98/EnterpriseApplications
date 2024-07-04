@@ -9,11 +9,10 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
-package io.swagger.client.models
+package com.unical.amazing.swagger.models
 
 import com.unical.amazing.model.account.Order
 import com.unical.amazing.model.account.WishlistModel
-import com.unical.amazing.swagger.models.AddressDto
 
 
 data class UserDto(

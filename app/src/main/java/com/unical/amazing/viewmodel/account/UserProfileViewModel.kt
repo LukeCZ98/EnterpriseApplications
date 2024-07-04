@@ -5,8 +5,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.unical.amazing.swagger.models.UserUpdDto
 import com.unical.amazing.viewmodel.auth.AuthViewModel
-import io.swagger.client.apis.UserApi
-import io.swagger.client.models.UserDto
+import com.unical.amazing.swagger.apis.UserApi
+import com.unical.amazing.swagger.models.UserDto
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

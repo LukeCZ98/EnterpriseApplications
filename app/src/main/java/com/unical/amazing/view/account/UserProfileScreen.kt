@@ -14,7 +14,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.unical.amazing.viewmodel.factories.UserProfileViewModelFactory
 import com.unical.amazing.viewmodel.account.UserProfileViewModel
-import io.swagger.client.models.UserDto
+import com.unical.amazing.swagger.models.UserDto
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 

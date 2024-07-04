@@ -32,7 +32,9 @@ import com.unical.amazing.theme.AmazingTheme
 import com.unical.amazing.view.account.AccountView
 import com.unical.amazing.view.admin.AdminView
 import com.unical.amazing.view.admin.EditProductView
+import com.unical.amazing.view.admin.OrderListView
 import com.unical.amazing.view.admin.ProductManagementView
+import com.unical.amazing.view.admin.UserManagementView
 import com.unical.amazing.viewmodel.admin.product.SharedProductViewModel
 import com.unical.amazing.view.auth.AuthScreen
 import com.unical.amazing.view.cart.CartView
@@ -40,6 +42,7 @@ import com.unical.amazing.view.home.ProductDetailView
 import com.unical.amazing.view.home.HomeView
 import com.unical.amazing.view.home.SearchResultsView
 import com.unical.amazing.viewmodel.admin.product.ProductViewModel
+import com.unical.amazing.viewmodel.admin.users.SharedUserViewModel
 import com.unical.amazing.viewmodel.auth.AuthViewModel
 import com.unical.amazing.viewmodel.cart.CartManager
 import com.unical.amazing.viewmodel.factories.ProductManagementViewModelFactory
@@ -64,6 +67,7 @@ class MainActivity : ComponentActivity() {
             val adminNavController = rememberNavController()
             val viewmodel = remember { HomeViewModel(context) }
             val sharedProductViewModel: SharedProductViewModel = viewModel()
+            val sharedUserViewModel: SharedUserViewModel = viewModel()
 
             val isLoggedIn = rememberSaveable { mutableStateOf(checkLoginStatus()) }
             val isAdmin = rememberSaveable { mutableStateOf(false) }
@@ -84,7 +88,7 @@ class MainActivity : ComponentActivity() {
                 ) {
                     if (isLoggedIn.value) {
                         if (isAdmin.value) {
-                            AdminNavHost(context,adminNavController,sharedProductViewModel) {
+                            AdminNavHost(context,adminNavController,sharedProductViewModel,sharedUserViewModel) {
                                 logout(isLoggedIn)
                             }
                         } else {
@@ -178,6 +182,7 @@ fun AdminNavHost(
     context: Context,
     adminNavController: NavHostController,
     sharedProductViewModel: SharedProductViewModel,
+    sharedUserViewModel : SharedUserViewModel,
     onLogout: () -> Unit
 ) {
     val viewModelFactory = remember { ProductManagementViewModelFactory(context) }
@@ -195,6 +200,16 @@ fun AdminNavHost(
         }
         composable("editproduct") {
             EditProductView(context, adminNavController, sharedProductViewModel)
+        }
+        composable("users"){
+            UserManagementView(
+                context = context,
+                adminNavController = adminNavController,
+                sharedUserViewModel = sharedUserViewModel
+            )
+        }
+        composable("edituserorders"){
+            OrderListView(context = context, sharedUserViewModel)
         }
     }
 }

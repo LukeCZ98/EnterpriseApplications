@@ -9,8 +9,8 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import com.unical.amazing.model.account.WishlistModel
 import com.unical.amazing.viewmodel.auth.AuthViewModel
-import io.swagger.client.apis.UserApi
-import io.swagger.client.models.UserDto
+import com.unical.amazing.swagger.apis.UserApi
+import com.unical.amazing.swagger.models.UserDto
 import kotlinx.coroutines.Dispatchers
 
 class AccountViewModel(context: Context) : ViewModel() {

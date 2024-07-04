@@ -5,13 +5,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.gson.Gson
 import com.unical.amazing.swagger.models.ProductDto
-import com.unical.amazing.swagger.models.UserWDto
 import com.unical.amazing.swagger.models.WishlistDto
 import com.unical.amazing.swagger.models.WishlistUpdateDTO
 import com.unical.amazing.viewmodel.auth.AuthViewModel
-import io.swagger.client.apis.UserApi
 import io.swagger.client.apis.WishlistApi
-import io.swagger.client.models.UserDto
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

@@ -6,7 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.unical.amazing.swagger.models.CheckoutDto
 import com.unical.amazing.swagger.models.ProductWithQuantity
 import com.unical.amazing.viewmodel.auth.AuthViewModel
-import io.swagger.client.apis.OrderApi
+import com.unical.amazing.swagger.apis.OrderApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
