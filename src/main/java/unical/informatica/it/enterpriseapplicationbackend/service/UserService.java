@@ -148,5 +148,92 @@ public class UserService {
     }
     return false;
   }
-  ..
+
+   /**
+   * Sends the user a forgot password reset based on the email provided.
+   * @param email The email to send to.
+   * @throws EmailNotFoundException Thrown if there is no user with that email.
+   * @throws EmailFailureException
+   */
+  public void forgotPassword(String email) throws EmailNotFoundException, EmailFailureException {
+    Optional<LocalUser> opUser = localUserDAO.findByEmailIgnoreCase(email);
+    if (opUser.isPresent()) {
+      LocalUser user = opUser.get();
+      String token = jwtService.generatePasswordResetJWT(user);
+      emailService.sendPasswordResetEmail(user, token);
+    } else {
+      throw new EmailNotFoundException();
+    }
+  }
+
+  /**
+   * Resets the users password using a given token and email.
+   * @param body The password reset information.
+   */
+  public void resetPassword(PasswordResetBody body) {
+    String email = jwtService.getResetPasswordEmail(body.getToken());
+    Optional<LocalUser> opUser = localUserDAO.findByEmailIgnoreCase(email);
+    if (opUser.isPresent()) {
+      LocalUser user = opUser.get();
+      user.setPassword(encryptionService.encryptPassword(body.getPassword()));
+      localUserDAO.save(user);
+    }
+  }
+
+  /**
+   * Method to check if an authenticated user has permission to a user ID.
+   * @param user The authenticated user.
+   * @param id The user ID.
+   * @return True if they have permission, false otherwise.
+   */
+  public boolean userHasPermissionToUser(LocalUser user, Long id) {
+    return user.getId() == id;
+  }
+
+
+  /**
+   * Updates the profile of the authenticated user.
+   *
+   * @param currentUser    The currently authenticated user.
+   * @param userUpdateBody The new user information.
+   * @return
+   */
+  @Transactional
+  public void updateUserProfile(LocalUser currentUser, UserUpdateBody userUpdateBody) {
+    Address address = currentUser.getAddresses().get(0);
+    address.setPhone(userUpdateBody.getPhone());
+    address.setAddress(userUpdateBody.getAddress());
+    address.setCity(userUpdateBody.getCity());
+    address.setCountry(userUpdateBody.getCountry());
+    address.setCAP(userUpdateBody.getCap());
+    addressService.saveAddress(address);
+  }
+
+  public List<LocalUser> findAll(){
+      return localUserDAO.findAll();
+  }
+
+
+  public LocalUser findByuser(String user) {
+    return localUserDAO.findByUsernameIgnoreCase(user).get();
+  }
+
+  public LocalUser findById(Long id) {
+    return localUserDAO.findById(id).get();
+  }
+
+  public LocalUser add(LocalUser user) {
+    LocalUser usr = new LocalUser();
+    usr.setEmail(user.getEmail());
+    usr.setUsername(user.getUsername());
+    usr.setFirstName(user.getFirstName());
+    usr.setLastName(user.getLastName());
+    usr.setPassword(encryptionService.encryptPassword(user.getPassword()));
+    usr.setRole(false);
+    usr.setEmailVerified(true);
+    return localUserDAO.save(usr);
+  }
+
+}
+
 
